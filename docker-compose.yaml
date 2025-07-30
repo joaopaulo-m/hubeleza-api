@@ -14,3 +14,9 @@ services:
       - PORT=4000
     env_file:
       - .env
+    networks:
+      - hubeleza
+
+networks:
+  hubeleza:
+    external: true
