@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Treatment {
+  id   String @id
+  name String
+
+  forms               Form[]
+  partners_treatments PartnerTreatment[]
+  leads_treatments    LeadTreatment[]
+  leads_dispatch      LeadDispatch[]
+
+  @@map("treatments")
+}
+
+model Form {
+  id               String @id
+  treatment_id     String
+  name             String
+  external_form_id String
+
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("forms")
+}
+
+model Partner {
+  id           String @id
+  name         String
+  phone_number String
+  cep          String
+  lat          String
+  lng          String
+
+  partners_treatments PartnerTreatment[]
+  leads_dispatch      LeadDispatch[]
+
+  @@map("partners")
+}
+
+model PartnerTreatment {
+  id           String @id
+  partner_id   String
+  treatment_id String
+
+  partner   Partner   @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("partners_treatments")
+}
+
+model Lead {
+  id           String @id
+  name         String
+  phone_number String
+  cep          String
+  lat          String
+  lng          String
+  created_at   BigInt
+
+  leads_treatments LeadTreatment[]
+  leads_dispatch   LeadDispatch[]
+
+  @@map("leads")
+}
+
+model LeadTreatment {
+  id           String @id
+  lead_id      String
+  treatment_id String
+
+  lead      Lead      @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("leads_treatments")
+}
+
+model LeadDispatch {
+  id           String @id
+  lead_id      String
+  partner_id   String
+  treatment_id String
+  message_sent String @db.Text
+  created_at   BigInt
+
+  lead      Lead      @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  partner   Partner   @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("leads_dispatch")
+}
