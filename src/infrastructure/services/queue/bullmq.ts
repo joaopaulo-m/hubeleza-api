@@ -13,6 +13,9 @@ export class BullMQQueueService implements IQueueService {
   }
 
   async add(job: QueueJob): Promise<void> {
-    await this.queue.add(job.name, job.data);
+    await this.queue.add(job.name, job.data, {
+      attempts: 3,
+      removeOnComplete: 50
+    });
   }
 }
