@@ -16,7 +16,10 @@ services:
       - .env
     networks:
       - hubeleza
+      - evolution-net
 
 networks:
   hubeleza:
+    external: true
+  evolution-net:
     external: true
