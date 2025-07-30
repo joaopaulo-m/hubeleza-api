@@ -21,7 +21,7 @@ export class EvolutionMessagingService implements IMessagingService {
         `${this.baseUrl}/message/sendText/${this.instance}`,
         {
           number: `+55${phone_number}`,
-          message,
+          text: message,
         },
         {
           headers: {
