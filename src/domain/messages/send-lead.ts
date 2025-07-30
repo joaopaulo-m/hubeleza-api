@@ -8,7 +8,7 @@ export const createSendLeadToPartnerMessage = (lead: Lead): string => {
     👤 Nome: ${lead.name}
     📞 Telefone: ${PhoneNumberFormatter.formatToDisplay(lead.phone_number)}
     📍 CEP: ${lead.cep}
-    💡 Tratamentos de interesse: ${lead.treatments.join(", ")}
+    💡 Tratamentos de interesse: ${lead.treatments.map(treatment => treatment.name).join(", ")}
 
     👉 Entre em contato o quanto antes para oferecer seu atendimento e tirar dúvidas!
 
