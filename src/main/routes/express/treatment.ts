@@ -12,10 +12,12 @@ router.post("/treatments", authenticationKeyMiddleware, async (req: Request, res
   const controller = makeCreateTreatmentController();
   const {  
     name,
+    price
   } = req.body;
 
   const { statusCode, response } = await controller.handle({
-    name
+    name,
+    price
   })
   res.status(statusCode).json(response);
 })

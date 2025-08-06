@@ -5,7 +5,6 @@ export type PersistenceForm = {
   id: string
   name: string
   external_form_id: string
-  treatment_id: string
 }
 
 export class FormMapper {
@@ -13,8 +12,7 @@ export class FormMapper {
     return new Form({
       id: raw.id,
       name: raw.name,
-      external_form_id: raw.external_form_id,
-      treatment_id: raw.treatment_id
+      external_form_id: raw.external_form_id
     })
   }
 
@@ -22,8 +20,7 @@ export class FormMapper {
     return {
       id: domain.id,
       name: domain.name,
-      external_form_id: domain.external_form_id,
-      treatment_id: domain.treatment_id
+      external_form_id: domain.external_form_id
     }
   }
 
@@ -31,8 +28,7 @@ export class FormMapper {
     return {
       id: domain.id,
       name: domain.name,
-      external_form_id: domain.external_form_id,
-      treatment_id: domain.treatment_id
+      external_form_id: domain.external_form_id
     }
   }
 }

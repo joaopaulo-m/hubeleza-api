@@ -3,6 +3,7 @@ import type { ITreatmentRepository } from "../../contracts/repos/treatment";
 
 export interface CreateTreatmentDto {
   name: string
+  price: number
 }
 
 export class CreateTreatmentUseCase {
@@ -18,7 +19,8 @@ export class CreateTreatmentUseCase {
     }
 
     const treatment = new Treatment({
-      name: props.name
+      name: props.name,
+      price: props.price
     })
 
     await this.treatmentRepo.create(treatment)

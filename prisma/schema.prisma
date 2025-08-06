@@ -9,10 +9,10 @@ datasource db {
 }
 
 model Treatment {
-  id   String @id
-  name String
+  id    String @id
+  name  String
+  price Int    @default(0)
 
-  forms               Form[]
   partners_treatments PartnerTreatment[]
   leads_treatments    LeadTreatment[]
   leads_dispatch      LeadDispatch[]
@@ -22,11 +22,8 @@ model Treatment {
 
 model Form {
   id               String @id
-  treatment_id     String
   name             String
   external_form_id String
-
-  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
 
   @@map("forms")
 }
