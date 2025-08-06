@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import type { IFormRepository } from "../../../application/contracts/repos/form";
 import { FormMapper } from "../../../application/mappers/form";
 import type { Form } from "../../../domain/entities/form";
@@ -7,7 +9,11 @@ export class PrismaFormRepository implements IFormRepository {
   async countByTreatment(treatment_id: string): Promise<number> {
     return prisma.form.count({
       where: {
-        treatment_id
+        treatments: {
+          some: {
+            treatment_id
+          }
+        }
       }
     })
   }
@@ -20,6 +26,13 @@ export class PrismaFormRepository implements IFormRepository {
     const form = await prisma.form.findUnique({
       where: {
         id
+      },
+      include: {
+        treatments: {
+          include: {
+            treatment: true
+          }
+        }
       }
     })
 
@@ -32,6 +45,13 @@ export class PrismaFormRepository implements IFormRepository {
     const form = await prisma.form.findFirst({
       where: {
         external_form_id: id
+      },
+      include: {
+        treatments: {
+          include: {
+            treatment: true
+          }
+        }
       }
     })
 
@@ -41,16 +61,40 @@ export class PrismaFormRepository implements IFormRepository {
   }
 
   async getAll() {
-    const forms = await prisma.form.findMany();
+    const forms = await prisma.form.findMany({
+      include: {
+        treatments: {
+          include: {
+            treatment: true
+          }
+        }
+      }
+    });
 
     return forms.map(FormMapper.toDomain);
   }
 
   async create(form: Form) {
-    const formData = FormMapper.toPersistence(form);
+    const data = {
+      ...FormMapper.toPersistence(form),
+      treatments: undefined
+    }
 
     await prisma.form.create({
-      data: formData
+      data: {
+        ...data,
+        treatments: {
+          createMany: {
+            data: form.treatments.map(treatment => {
+              return {
+                id: randomUUID(),
+                treatment_id: treatment.id
+              }
+            }),
+            skipDuplicates: true
+          }
+        }
+      }
     });
   }
 
@@ -58,14 +102,28 @@ export class PrismaFormRepository implements IFormRepository {
     const data = {
       ...FormMapper.toPersistence(form),
       id: undefined,
-      treatment_id: undefined
+      treatments: undefined
     }
 
     await prisma.form.update({
       where: {
         id: form.id
       },
-      data
+      data: {
+        ...data,
+        treatments: {
+          deleteMany: {},
+          createMany: {
+            data: form.treatments.map(treatment => {
+              return {
+                id: randomUUID(),
+                treatment_id: treatment.id
+              }
+            }),
+            skipDuplicates: true
+          }
+        }
+      }
     });
   }
 

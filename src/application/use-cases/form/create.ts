@@ -4,8 +4,8 @@ import type { ITreatmentRepository } from "../../contracts/repos/treatment";
 
 export interface CreateFormDto {
   external_form_id: string
-  treatment_id: string
   name: string
+  treatment_ids: string[]
 }
 
 export class CreateFormUseCase {
@@ -21,16 +21,20 @@ export class CreateFormUseCase {
       return new Error("Form already exists")
     }
 
-    const treatmentExists = await this.treatmentRepo.findById(props.treatment_id)
+    const allTreatments = await this.treatmentRepo.getAll()
 
-    if (!treatmentExists) {
-      return new Error("Treatment does not exists")
+    if (!props.treatment_ids.some(treatmentId => allTreatments.map(t => t.id).includes(treatmentId))) {
+      return new Error("Some treatment does not exists")
     }
 
     const form = new Form({
       external_form_id: props.external_form_id,
-      treatment_id: treatmentExists.id,
-      name: props.name
+      name: props.name,
+      treatments: props.treatment_ids.map(treatmentId => {
+        const index = allTreatments.findIndex(treatment => treatment.id === treatmentId) as number
+
+        return allTreatments[index]
+      })
     })
     await this.formRepo.create(form)
 

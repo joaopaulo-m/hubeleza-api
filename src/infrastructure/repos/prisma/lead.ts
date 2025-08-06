@@ -75,7 +75,11 @@ export class PrismaLeadRepository implements ILeadRepository {
       take: limit,
       include: {
         lead: true,
-        treatment: true
+        treatments: {
+          include: {
+            treatment: true
+          }
+        }
       }
     })
 
@@ -89,7 +93,7 @@ export class PrismaLeadRepository implements ILeadRepository {
       })
       .map(d => ({
         name: d.lead.name,
-        treatment: d.treatment.name,
+        treatments: d.treatments.map(t => t.treatment.name),
         phone_number: d.lead.phone_number,
         status: d.message_sent ? 'Enviado' : 'Pendente',
         created_at: Number(d.created_at),

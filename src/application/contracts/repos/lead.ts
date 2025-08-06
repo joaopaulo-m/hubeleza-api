@@ -15,7 +15,7 @@ export interface ILeadRepository {
 
 export type RecentLead = {
   name: string
-  treatment: string
+  treatments: string[]
   phone_number: string
   status: 'Enviado' | 'Pendente'
   created_at: number

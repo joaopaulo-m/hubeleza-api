@@ -10,11 +10,11 @@ const router = Router()
 
 router.post("/forms", authenticationKeyMiddleware, async (req: Request, res: Response) => {
   const controller = makeCreateFormController();
-  const { name, treatment_id, external_form_id } = req.body;
+  const { name, treatment_ids, external_form_id } = req.body;
 
   const { statusCode, response } = await controller.handle({
     name,
-    treatment_id,
+    treatment_ids,
     external_form_id,
   })
   res.status(statusCode).json(response);
@@ -23,12 +23,13 @@ router.post("/forms", authenticationKeyMiddleware, async (req: Request, res: Res
 router.patch("/forms/:form_id", authenticationKeyMiddleware, async (req: Request, res: Response) => {
   const controller = makeUpdateFormController();
   const { form_id } = req.params;
-  const { name, external_form_id } = req.body;
+  const { name, external_form_id, treatment_ids } = req.body;
 
   const { statusCode, response } = await controller.handle({
     form_id,
     name,
     external_form_id,
+    treatment_ids
   })
   res.status(statusCode).json(response);
 })

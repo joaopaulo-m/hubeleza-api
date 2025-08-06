@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+
 import type { Lead } from "./lead";
 import type { Partner } from "./partner";
 import type { Treatment } from "./treatment";
@@ -7,7 +8,7 @@ export type LeadDispatchProps = {
   id: string;
   lead: Lead;
   partner: Partner;
-  treatment: Treatment;
+  treatments: Treatment[];
   message_sent: string;
   created_at: number;
 }
@@ -27,8 +28,8 @@ export class LeadDispatch {
     return this.props.partner;
   }
 
-  get treatment(): Treatment {
-    return this.props.treatment;
+  get treatments() {
+    return this.props.treatments;
   }
 
   get message_sent(): string {
