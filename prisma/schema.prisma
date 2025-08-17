@@ -83,9 +83,10 @@ model PartnerTreatment {
 }
 
 model Wallet {
-  id         String @id
-  partner_id String @unique
-  balance    Int
+  id          String  @id
+  partner_id  String  @unique
+  balance     Int
+  external_id String?
 
   partner      Partner       @relation(fields: [partner_id], references: [id])
   transactions Transaction[]
@@ -96,6 +97,7 @@ model Wallet {
 model Transaction {
   id         String  @id
   wallet_id  String
+  status     String
   type       String
   amount     Int
   lead_price Int

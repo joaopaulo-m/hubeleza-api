@@ -3,6 +3,7 @@ import type { LeadDto } from "./lead"
 export interface TransactionDto {
   id: string
   wallet_id: string
+  status: string
   type: string
   amount: number
   lead_price: number

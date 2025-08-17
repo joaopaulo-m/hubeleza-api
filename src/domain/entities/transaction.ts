@@ -1,12 +1,14 @@
 import { randomUUID } from "node:crypto"
 
-import type { TransactionType } from "../enums/transaction-type"
+import { TransactionType } from "../enums/transaction-type"
 import type { Lead } from "./lead"
+import { TransactionStatus } from "../enums/transaction-status"
 
 export type TransactionProps = {
   id: string
   wallet_id: string
   type: TransactionType
+  status: TransactionStatus
   amount: number
   lead_price: number
   created_at: number
@@ -26,6 +28,10 @@ export class Transaction {
 
   get type() {
     return this.props.type
+  }
+
+  get status() {
+    return this.props.status
   }
 
   get amount() {
@@ -50,5 +56,23 @@ export class Transaction {
       id: props.id || randomUUID(),
       created_at: props.created_at || Date.now()
     }
+  }
+
+  public updateStatus(status: TransactionStatus): Error | void {
+    if (
+      this.props.type === TransactionType.INCOME && 
+      (status === TransactionStatus.RECEIVED || status === TransactionStatus.PENDING_RECEIPT)
+    ) {
+      return new Error("Invalid status for this type of transaction")
+    }
+  
+    if (
+      this.props.type === TransactionType.EXPENSE && 
+      (status === TransactionStatus.PAID || status === TransactionStatus.PENDING_PAYMENT)
+    ) {
+      return new Error("Invalid status for this type of transaction")
+    }
+
+    this.props.status = status
   }
 }

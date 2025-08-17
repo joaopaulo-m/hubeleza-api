@@ -1,0 +1,6 @@
+export enum TransactionStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
+  PAID = 'PAID',
+  PENDING_RECEIPT = 'PENDING_RECEIPT',
+  RECEIVED = 'RECEIVED',
+}

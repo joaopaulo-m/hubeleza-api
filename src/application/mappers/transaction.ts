@@ -1,4 +1,5 @@
 import { Transaction } from "../../domain/entities/transaction"
+import type { TransactionStatus } from "../../domain/enums/transaction-status"
 import type { TransactionType } from "../../domain/enums/transaction-type"
 import type { TransactionDto } from "../dtos/transaction"
 import { LeadMapper, type PersistenceLead } from "./lead"
@@ -6,6 +7,7 @@ import { LeadMapper, type PersistenceLead } from "./lead"
 export type PersistenceTransaction = {
   id: string
   wallet_id: string
+  status: string
   type: string
   amount: number
   lead_price: number
@@ -18,6 +20,7 @@ export class TransactionMapper {
     return new Transaction({
       id: raw.id,
       wallet_id: raw.wallet_id,
+      status: raw.status as TransactionStatus,
       type: raw.type as TransactionType,
       amount: raw.amount,
       lead_price: raw.lead_price,
@@ -30,6 +33,7 @@ export class TransactionMapper {
     return {
       id: domain.id,
       wallet_id: domain.wallet_id,
+      status: domain.status,
       type: domain.type,
       amount: domain.amount,
       lead_price: domain.lead_price,
@@ -42,6 +46,7 @@ export class TransactionMapper {
     return {
       id: domain.id,
       wallet_id: domain.wallet_id,
+      status: domain.status,
       type: domain.type,
       amount: domain.amount,
       lead_price: domain.lead_price,

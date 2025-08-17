@@ -7,6 +7,7 @@ export type WalletProps = {
   partner_id: string
   balance: number
   transactions: Transaction[]
+  external_id?: string
 }
 
 export class Wallet {
@@ -18,6 +19,10 @@ export class Wallet {
 
   get partner_id() {
     return this.props.partner_id
+  }
+
+  get external_id() {
+    return this.props.external_id
   }
 
   get balance() {
@@ -33,6 +38,10 @@ export class Wallet {
       ...props,
       id: props.id || randomUUID()
     }
+  }
+
+  public updateExternalId(external_id: string) {
+    this.props.external_id = external_id
   }
 
   public debit(amount: number): Error | void {
