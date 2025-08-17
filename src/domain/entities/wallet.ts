@@ -1,0 +1,57 @@
+import { randomUUID } from "node:crypto"
+
+import type { Transaction } from "./transaction"
+
+export type WalletProps = {
+  id: string
+  partner_id: string
+  balance: number
+  transactions: Transaction[]
+}
+
+export class Wallet {
+  private readonly props: WalletProps
+
+  get id() {
+    return this.props.id
+  }
+
+  get partner_id() {
+    return this.props.partner_id
+  }
+
+  get balance() {
+    return this.props.balance
+  }
+
+  get transactions() {
+    return this.props.transactions
+  }
+
+  constructor(props: Omit<WalletProps, "id"> & { id?: string }){
+    this.props = {
+      ...props,
+      id: props.id || randomUUID()
+    }
+  }
+
+  public debit(amount: number): Error | void {
+    if (amount < 0) {
+      return new Error("Negative amount")
+    }
+
+    if (this.props.balance < amount) {
+      return new Error("Insufficient amount in balance")
+    }
+
+    this.props.balance -= amount
+  }
+
+  public credit(amount: number): Error | void {
+    if (amount < 0) {
+      return new Error("Negative amount")
+    }
+
+    this.props.balance += amount
+  }
+}
