@@ -66,6 +66,7 @@ model Partner {
 
   partners_treatments PartnerTreatment[]
   leads_dispatch      LeadDispatch[]
+  wallet              Wallet?
 
   @@map("partners")
 }
@@ -81,6 +82,32 @@ model PartnerTreatment {
   @@map("partners_treatments")
 }
 
+model Wallet {
+  id         String @id
+  partner_id String @unique
+  balance    Int
+
+  partner      Partner       @relation(fields: [partner_id], references: [id])
+  transactions Transaction[]
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id         String  @id
+  wallet_id  String
+  type       String
+  amount     Int
+  lead_price Int
+  created_at BigInt
+  lead_id    String?
+
+  wallet Wallet @relation(fields: [wallet_id], references: [id])
+  lead   Lead?  @relation(fields: [lead_id], references: [id])
+
+  @@map("transactions")
+}
+
 model Lead {
   id           String @id
   name         String
@@ -92,6 +119,7 @@ model Lead {
 
   leads_treatments LeadTreatment[]
   leads_dispatch   LeadDispatch[]
+  transactions     Transaction[]
 
   @@map("leads")
 }
