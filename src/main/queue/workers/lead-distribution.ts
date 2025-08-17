@@ -12,14 +12,14 @@ export const processSaleWorker = new Worker(
       const { 
         lead_id,
         partner_id,
-        treatment_id,
+        treatment_ids,
       } = job.data;
       const useCase = makeSendLeadToPartnerUseCase();
 
       const result = await useCase.execute({
         lead_id,
         partner_id,
-        treatment_id,
+        treatment_ids,
       })
 
       if (result instanceof Error) {

@@ -10,6 +10,8 @@ import partnerRoutes from './routes/express/partner'
 import treatmentRoutes from './routes/express/treatment'
 import authRoutes from './routes/express/auth'
 import dashboardRoutes from './routes/express/dashboard'
+import adminRoutes from './routes/express/admin'
+import inviteTokenRoutes from './routes/express/invite-token'
 
 const app = express();
 
@@ -25,5 +27,7 @@ app.use(partnerRoutes)
 app.use(treatmentRoutes)
 app.use(authRoutes)
 app.use(dashboardRoutes)
+app.use(adminRoutes)
+app.use(inviteTokenRoutes)
 
 export { app }

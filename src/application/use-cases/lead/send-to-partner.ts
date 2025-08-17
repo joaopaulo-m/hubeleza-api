@@ -9,7 +9,7 @@ import type { IMessagingService } from "../../contracts/services/messaging";
 export interface SendLeadToPartnerDto {
   lead_id: string;
   partner_id: string;
-  treatment_id: string;
+  treatment_ids: string[];
 }
 
 export class SendLeadToParnterUseCase {
@@ -32,9 +32,10 @@ export class SendLeadToParnterUseCase {
       return new Error("Partner not found");
     }
 
-    const treatment = await this.treatmentRepo.findById(props.treatment_id);
-    if (!treatment) {
-      return new Error("Treatment not found");
+    const allTreatments = await this.treatmentRepo.getAll()
+
+    if (!props.treatment_ids.some(treatmentId => allTreatments.map(t => t.id).includes(treatmentId))) {
+      return new Error("Some treatment does not exists")
     }
 
     const message = createSendLeadToPartnerMessage(lead)
@@ -51,7 +52,11 @@ export class SendLeadToParnterUseCase {
     const leadDispatch = new LeadDispatch({
       lead: lead,
       partner,
-      treatment,
+      treatments: props.treatment_ids.map(treatmentId => {
+        const index = allTreatments.findIndex(treatment => treatment.id === treatmentId) as number
+
+        return allTreatments[index]
+      }),
       message_sent: message
     })
     await this.leadDispatchRepo.create(leadDispatch);

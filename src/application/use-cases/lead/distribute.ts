@@ -26,7 +26,7 @@ export class DistributeLeadUseCase {
     }
 
     const createLeadResult = await this.createLeadUseCase.execute({
-      treatment_id: leadForm.treatment_id,
+      treatment_ids: leadForm.treatments.map(treatment => treatment.id),
       name: props.name,
       phone_number: props.phone_number,
       cep: props.cep
@@ -50,7 +50,7 @@ export class DistributeLeadUseCase {
         data: {
           partner_id: partner.id,
           lead_id: lead.id,
-          treatment_id: leadForm.treatment_id,
+          treatments: lead.treatments
         }
       })
     }

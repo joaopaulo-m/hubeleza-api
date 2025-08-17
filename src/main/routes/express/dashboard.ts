@@ -1,19 +1,20 @@
 import { Router, type Request, type Response } from "express";
 
-import { authenticationKeyMiddleware } from "./middlewares/auth-key";
 import { makeGetDashboardDataController } from "../../factories/dashboard/get-data";
 import { makeGetTreatmentDataController } from "../../factories/dashboard/get-treatment-data";
+import { verifyToken } from "./middlewares/jwt";
+import { AccountType } from "../../../shared/enums/account-type";
 
 const router = Router()
 
-router.get("/dashboards", authenticationKeyMiddleware, async (req: Request, res: Response) => {
+router.get("/dashboards", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
   const controller = makeGetDashboardDataController();
   
   const { statusCode, response } = await controller.handle()
   res.status(statusCode).json(response);
 })
 
-router.get("/dashboards/treatments/:treatment_id", authenticationKeyMiddleware, async (req: Request, res: Response) => {
+router.get("/dashboards/treatments/:treatment_id", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
   const { treatment_id } = req.params
   const controller = makeGetTreatmentDataController();
   

@@ -4,7 +4,7 @@ import type { ITreatmentRepository } from "../../contracts/repos/treatment";
 import type { IGeolocationService } from "../../contracts/services/geolocation";
 
 export interface CreateLeadDto {
-  treatment_id: string
+  treatment_ids: string[]
   name: string
   phone_number: string
   cep: string
@@ -24,10 +24,10 @@ export class CreateLeadUseCase {
       return new Error("Lead already exists")
     }
 
-    const treatmentExists = await this.treatmentRepo.findById(props.treatment_id)
+    const allTreatments = await this.treatmentRepo.getAll()
 
-    if (!treatmentExists) {
-      return new Error("Treatment does not exists")
+    if (!props.treatment_ids.some(treatmentId => allTreatments.map(t => t.id).includes(treatmentId))) {
+      return new Error("Some treatment does not exists")
     }
 
     const getCoordinatesResult = await this.geolocationService.getCoordinatesByCEP(props.cep)
@@ -45,7 +45,11 @@ export class CreateLeadUseCase {
       cep: props.cep,
       lat,
       lng,
-      treatments: [treatmentExists]
+      treatments: props.treatment_ids.map(treatmentId => {
+        const index = allTreatments.findIndex(treatment => treatment.id === treatmentId) as number
+
+        return allTreatments[index]
+      })
     })
 
     await this.leadRepo.create(lead)

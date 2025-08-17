@@ -1,10 +1,12 @@
 import { randomUUID } from "node:crypto";
 
+import type { Treatment } from "./treatment";
+
 export type FormProps = {
   id: string
   name: string
   external_form_id: string
-  treatment_id: string
+  treatments: Treatment[]
 }
 
 export class Form {
@@ -22,8 +24,8 @@ export class Form {
     return this.props.external_form_id
   }
 
-  get treatment_id() {
-    return this.props.treatment_id
+  get treatments() {
+    return this.props.treatments;
   }
 
   constructor(props: Omit<FormProps, 'id'> & { id?: string }) {
@@ -39,5 +41,9 @@ export class Form {
 
   public updateName(name: string) {
     this.props.name = name
+  }
+
+  public updateTreatments(treatments: Treatment[]) {
+    this.props.treatments = treatments
   }
 }

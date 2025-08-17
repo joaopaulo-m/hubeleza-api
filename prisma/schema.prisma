@@ -9,31 +9,56 @@ datasource db {
 }
 
 model Treatment {
-  id   String @id
-  name String
+  id    String @id
+  name  String
+  price Int    @default(0)
 
-  forms               Form[]
   partners_treatments PartnerTreatment[]
   leads_treatments    LeadTreatment[]
-  leads_dispatch      LeadDispatch[]
+  forms               FormTreatment[]
+  leads_dispatch      LeadDispatchTreatment[]
 
   @@map("treatments")
 }
 
 model Form {
   id               String @id
-  treatment_id     String
   name             String
   external_form_id String
 
-  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+  treatments FormTreatment[]
 
   @@map("forms")
+}
+
+model FormTreatment {
+  id           String @id
+  form_id      String
+  treatment_id String
+
+  form      Form      @relation(fields: [form_id], references: [id], onDelete: Cascade)
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("forms_treatments")
+}
+
+model Admin {
+  id         String  @id
+  name       String
+  email      String
+  password   String
+  created_at BigInt
+  superadmin Boolean
+
+  @@map("admins")
 }
 
 model Partner {
   id           String @id
   name         String
+  email        String
+  password     String
+  created_at   BigInt
   phone_number String
   cep          String
   lat          String
@@ -86,13 +111,32 @@ model LeadDispatch {
   id           String @id
   lead_id      String
   partner_id   String
-  treatment_id String
   message_sent String @db.Text
   created_at   BigInt
 
-  lead      Lead      @relation(fields: [lead_id], references: [id], onDelete: Cascade)
-  partner   Partner   @relation(fields: [partner_id], references: [id], onDelete: Cascade)
-  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+  lead       Lead                    @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  partner    Partner                 @relation(fields: [partner_id], references: [id], onDelete: Cascade)
+  treatments LeadDispatchTreatment[]
 
   @@map("leads_dispatch")
+}
+
+model LeadDispatchTreatment {
+  id               String @id
+  lead_dispatch_id String
+  treatment_id     String
+
+  lead_dispatch LeadDispatch @relation(fields: [lead_dispatch_id], references: [id], onDelete: Cascade)
+  treatment     Treatment    @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("leads_dispatch_treatments")
+}
+
+model InviteToken {
+  id         String @id
+  name       String
+  token      String
+  expires_at BigInt
+
+  @@map("invite_tokens")
 }

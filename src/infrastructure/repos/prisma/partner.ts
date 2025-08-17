@@ -45,6 +45,25 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     return PartnerMapper.toDomain(partner);
   }
 
+  async findByEmail(email: string) {
+    const partner = await prisma.partner.findFirst({
+      where: {
+        email
+      },
+      include: {
+        partners_treatments: {
+          include: {
+            treatment: true
+          }
+        }
+      }
+    });
+
+    if (!partner) return null;
+
+    return PartnerMapper.toDomain(partner);
+  }
+
   async findByPhoneNumber(phone_number: string) {
     const partner = await prisma.partner.findFirst({
       where: {
