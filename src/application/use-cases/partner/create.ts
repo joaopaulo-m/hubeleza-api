@@ -5,6 +5,7 @@ import type { IGeolocationService } from "../../contracts/services/geolocation";
 
 export interface CreatePartnerDto {
   name: string
+  email: string
   phone_number: string
   cep: string
   treatment_ids: string[]
@@ -43,6 +44,8 @@ export class CreatePartnerUseCase {
 
     const { lat, lng } = getCoordinatesResult
     const partner = new Partner({
+      email: props.email,
+      password: "not-defined",
       name: props.name,
       phone_number: props.phone_number,
       cep: props.cep,

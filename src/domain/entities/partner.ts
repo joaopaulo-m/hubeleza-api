@@ -1,10 +1,7 @@
-import { randomUUID } from "node:crypto"
-
 import type { Treatment } from "./treatment"
+import { Account, type AccountProps } from "./account"
 
-export type PartnerProps = {
-  id: string
-  name: string
+export type PartnerProps = AccountProps & {
   phone_number: string
   cep: string
   lat: string
@@ -12,41 +9,37 @@ export type PartnerProps = {
   treatments: Treatment[]
 }
 
-export class Partner {
-  private readonly props: PartnerProps;
-
-  get id() {
-    return this.props.id
-  }
-
-  get name() {
-    return this.props.name
-  }
+export class Partner extends Account {
+  private readonly partnerProps: Omit<PartnerProps, keyof AccountProps>;
 
   get phone_number() {
-    return this.props.phone_number
+    return this.partnerProps.phone_number
   }
 
   get cep() {
-    return this.props.cep
+    return this.partnerProps.cep
   }
 
   get lat() {
-    return this.props.lat
+    return this.partnerProps.lat
   }
 
   get lng() {
-    return this.props.lng
+    return this.partnerProps.lng
   }
 
   get treatments() {
-    return this.props.treatments
+    return this.partnerProps.treatments
   }
 
-  constructor(props: Omit<PartnerProps, "id"> & { id?: string }) {
-    this.props = {
-      ...props,
-      id: props.id || randomUUID()
+  constructor(props: Omit<PartnerProps, "id" | "created_at"> & { id?: string, created_at?: number }) {
+    super(props)
+    this.partnerProps = {
+      phone_number: props.phone_number,
+      cep: props.cep,
+      lat: props.lat,
+      lng: props.lng,
+      treatments: props.treatments
     }
   }
 
@@ -55,22 +48,22 @@ export class Partner {
   }
 
   public updatePhoneNumber(phone_number: string) {
-    this.props.phone_number = phone_number
+    this.partnerProps.phone_number = phone_number
   }
 
   public updateCep(cep: string) {
-    this.props.cep = cep
+    this.partnerProps.cep = cep
   }
 
   public updateLat(lat: string) {
-    this.props.lat = lat
+    this.partnerProps.lat = lat
   }
 
   public updateLng(lng: string) {
-    this.props.lng = lng
+    this.partnerProps.lng = lng
   }
 
   public updateTreatments(treatments: Treatment[]) {
-    this.props.treatments = treatments
+    this.partnerProps.treatments = treatments
   }
 }

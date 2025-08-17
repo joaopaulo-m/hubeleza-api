@@ -42,9 +42,23 @@ model FormTreatment {
   @@map("forms_treatments")
 }
 
+model Admin {
+  id         String  @id
+  name       String
+  email      String
+  password   String
+  created_at BigInt
+  superadmin Boolean
+
+  @@map("admins")
+}
+
 model Partner {
   id           String @id
   name         String
+  email        String
+  password     String
+  created_at   BigInt
   phone_number String
   cep          String
   lat          String
@@ -116,4 +130,13 @@ model LeadDispatchTreatment {
   treatment     Treatment    @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
 
   @@map("leads_dispatch_treatments")
+}
+
+model InviteToken {
+  id         String @id
+  name       String
+  token      String
+  expires_at BigInt
+
+  @@map("invite_tokens")
 }

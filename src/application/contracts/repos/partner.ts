@@ -8,6 +8,7 @@ export interface IPartnerRepository {
   countByTreatment(treatment_id: string): Promise<number>
   countActive(): Promise<number>
   findById: (id: string) => Promise<null | Partner>
+  findByEmail: (email: string) => Promise<null | Partner>
   findByPhoneNumber: (phone_number: string) => Promise<null | Partner>
   findNearestPartners: (props: FindNearestPartnersProps) => Promise<Partner[]>
   getAll: () => Promise<Partner[]>
