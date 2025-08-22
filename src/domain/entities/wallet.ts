@@ -5,6 +5,7 @@ import type { Transaction } from "./transaction"
 export type WalletProps = {
   id: string
   partner_id: string
+  document: string
   balance: number
   transactions: Transaction[]
   external_id?: string
@@ -19,6 +20,10 @@ export class Wallet {
 
   get partner_id() {
     return this.props.partner_id
+  }
+
+  get document() {
+    return this.props.document
   }
 
   get external_id() {

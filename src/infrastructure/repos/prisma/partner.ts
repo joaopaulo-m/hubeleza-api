@@ -6,6 +6,10 @@ import type { Partner } from "../../../domain/entities/partner";
 import { prisma } from "../../services/prisma";
 
 export class PrismaPartnerRepository implements IPartnerRepository {
+  async countAll(): Promise<number> {
+    return prisma.partner.count();
+  }
+
   async countByTreatment(treatment_id: string): Promise<number> {
     return await prisma.partner.count({
       where: {
@@ -24,6 +28,24 @@ export class PrismaPartnerRepository implements IPartnerRepository {
         partners_treatments: { some: {} }
       }
     })
+  }
+
+  async getTopPartnersByLeadCount(limit: number): Promise<{ partner_name: string, total_leads: number }[]> {
+    const raw = await prisma.$queryRawUnsafe<
+      { partner_name: string, total_leads: number }[]
+    >(`
+      SELECT p.name AS partner_name, COUNT(ld.id) AS total_leads
+      FROM leads_dispatch ld
+      JOIN partners p ON p.id = ld.partner_id
+      GROUP BY p.name
+      ORDER BY total_leads DESC
+      LIMIT $1
+    `, limit);
+  
+    return raw.map(row => ({
+      partner_name: row.partner_name,
+      total_leads: Number(row.total_leads)
+    }));
   }
 
   async findById(id: string) {
@@ -83,10 +105,10 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     return PartnerMapper.toDomain(partner);
   }
 
-  async findNearestPartners({ lat, lng, limit = 5 }: FindNearestPartnersProps) {
+  async findNearestPartners({ lat, lng, limit = 5, lead_price }: FindNearestPartnersProps) {
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
-
+  
     const rawPartners = await prisma.$queryRawUnsafe<any[]>(`
       SELECT p.*,
         (
@@ -97,13 +119,14 @@ export class PrismaPartnerRepository implements IPartnerRepository {
           )))
         ) AS distance
       FROM partners p
+      JOIN wallets w ON w.partner_id = p.id
+      WHERE w.balance >= $3
       ORDER BY distance
-      LIMIT $3
-    `, parsedLat, parsedLng, limit);
-
-    // Recupera os tratamentos para cada partner (em batch)
+      LIMIT $4
+    `, parsedLat, parsedLng, lead_price, limit);
+  
     const partnerIds = rawPartners.map(p => p.id);
-
+  
     const partnersWithTreatments = await prisma.partner.findMany({
       where: {
         id: { in: partnerIds }
@@ -116,15 +139,15 @@ export class PrismaPartnerRepository implements IPartnerRepository {
         }
       }
     });
-
+  
     const mapById = new Map(partnersWithTreatments.map(p => [p.id, p]));
-
+  
     const result = rawPartners.map(partnerRaw => {
       const fullPartner = mapById.get(partnerRaw.id);
       if (!fullPartner) return null;
       return PartnerMapper.toDomain(fullPartner);
     }).filter(Boolean) as ReturnType<typeof PartnerMapper.toDomain>[];
-
+  
     return result;
   }
 
@@ -136,6 +159,9 @@ export class PrismaPartnerRepository implements IPartnerRepository {
             treatment: true
           }
         }
+      },
+      orderBy: {
+        created_at: "desc"
       }
     });
 

@@ -28,6 +28,14 @@ export class PrismaTreatmentRepository implements ITreatmentRepository {
     return TreatmentMapper.toDomain(treatment);
   }
 
+  async countByPartnerId(partner_id: string) {
+    return await prisma.partnerTreatment.count({
+      where: {
+        partner_id
+      }
+    })
+  }
+
   async getTreatmentPerformance(): Promise<TreatmentPerformance[]> {
     const treatments = await prisma.treatment.findMany({
       include: {
@@ -41,6 +49,26 @@ export class PrismaTreatmentRepository implements ITreatmentRepository {
       total_leads: t.leads_treatments.length,
       total_partners: t.partners_treatments.length,
     }))
+  }
+
+  async getTopTreatmentsByLeadCount(limit: number): Promise<{ name: string, total_leads: number }[]> {
+    const results = await prisma.treatment.findMany({
+      take: limit,
+      orderBy: {
+        leads_treatments: {
+          _count: 'desc'
+        }
+      },
+      select: {
+        name: true,
+        leads_treatments: true
+      }
+    });
+  
+    return results.map(t => ({
+      name: t.name,
+      total_leads: t.leads_treatments.length
+    }));
   }
 
   async getAll() {

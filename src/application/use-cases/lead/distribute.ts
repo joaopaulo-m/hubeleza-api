@@ -1,3 +1,4 @@
+import type { IConfigRepository } from "../../contracts/repos/config";
 import type { IFormRepository } from "../../contracts/repos/form";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import type { IQueueService } from "../../contracts/services/queue";
@@ -14,6 +15,7 @@ export class DistributeLeadUseCase {
   constructor(
     private readonly formRepo: IFormRepository,
     private readonly partnerRepo: IPartnerRepository,
+    private readonly configRepo: IConfigRepository,
     private readonly queueService: IQueueService,
     private readonly createLeadUseCase: CreateLeadUseCase,
   ) {}
@@ -37,9 +39,11 @@ export class DistributeLeadUseCase {
     }
 
     const lead = createLeadResult;
+    const leadPrice = await this.configRepo.getLeadPrice()
     const leadPartners = await this.partnerRepo.findNearestPartners({
       lat: lead.lat,
       lng: lead.lng,
+      lead_price: leadPrice,
       limit: 5
     })
 
@@ -50,7 +54,7 @@ export class DistributeLeadUseCase {
         data: {
           partner_id: partner.id,
           lead_id: lead.id,
-          treatments: lead.treatments
+          treatment_ids: lead.treatments.map(treatment => treatment.id)
         }
       })
     }

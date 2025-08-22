@@ -3,7 +3,9 @@ import type { Treatment } from "../../../domain/entities/treatment";
 export interface ITreatmentRepository {
   findByName: (name: string) => Promise<null | Treatment>
   findById: (id: string) => Promise<null | Treatment>
+  countByPartnerId: (partner_id: string) => Promise<number>
   getTreatmentPerformance: () => Promise<TreatmentPerformance[]>
+  getTopTreatmentsByLeadCount(limit: number): Promise<{ name: string, total_leads: number }[]>
   getAll: () => Promise<Treatment[]>
   create: (treatment: Treatment) => Promise<void>
   update: (treatment: Treatment) => Promise<void>

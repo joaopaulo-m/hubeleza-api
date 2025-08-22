@@ -45,8 +45,12 @@ router.delete("/forms/:form_id", verifyToken([AccountType.ADMIN]), async (req: R
 
 router.get("/forms", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
   const controller = makeGetAllFormsController();
+  const { name, treatment_ids } = req.query
   
-  const { statusCode, response } = await controller.handle()
+  const { statusCode, response } = await controller.handle({
+    name: name ? name.toString() : undefined,
+    treatment_ids: treatment_ids ? (treatment_ids as string).split(",") : undefined
+  })
   res.status(statusCode).json(response);
 })
 

@@ -45,7 +45,7 @@ router.delete("/treatments/:treatment_id", verifyToken([AccountType.ADMIN]), asy
   res.status(statusCode).json(response);
 })
 
-router.get("/treatments", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.get("/treatments", verifyToken([AccountType.ADMIN, AccountType.PARTNER]), async (req: Request, res: Response) => {
   const controller = makeGetAllTreatmentsController();
 
   const { statusCode, response } = await controller.handle()

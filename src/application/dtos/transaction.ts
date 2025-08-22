@@ -6,7 +6,7 @@ export interface TransactionDto {
   status: string
   type: string
   amount: number
-  lead_price: number
   created_at: number
+  lead_price?: number
   lead?: LeadDto
 }

@@ -1,9 +1,15 @@
 import { LeadDispatch } from "../../../domain/entities/lead-dispatch";
+import { Transaction } from "../../../domain/entities/transaction";
+import { TransactionStatus } from "../../../domain/enums/transaction-status";
+import { TransactionType } from "../../../domain/enums/transaction-type";
 import { createSendLeadToPartnerMessage } from "../../../domain/messages/send-lead";
+import type { IConfigRepository } from "../../contracts/repos/config";
 import type { ILeadRepository } from "../../contracts/repos/lead";
 import type { ILeadDispatchRepository } from "../../contracts/repos/lead-dispatch";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
+import type { ITransactionRepository } from "../../contracts/repos/transaction";
 import type { ITreatmentRepository } from "../../contracts/repos/treatment";
+import type { IWalletRepository } from "../../contracts/repos/wallet";
 import type { IMessagingService } from "../../contracts/services/messaging";
 
 export interface SendLeadToPartnerDto {
@@ -18,6 +24,9 @@ export class SendLeadToParnterUseCase {
     private readonly partnerRepo: IPartnerRepository,
     private readonly treatmentRepo: ITreatmentRepository,
     private readonly leadDispatchRepo: ILeadDispatchRepository,
+    private readonly walletRepo: IWalletRepository,
+    private readonly transactionRepo: ITransactionRepository,
+    private readonly configRepo: IConfigRepository,
     private readonly messagingService: IMessagingService
   ){}
 
@@ -32,6 +41,18 @@ export class SendLeadToParnterUseCase {
       return new Error("Partner not found");
     }
 
+    const wallet = await this.walletRepo.findByPartnerId(partner.id)
+
+    if (!wallet) {
+      return new Error("Partner does not have a wallet")
+    }
+
+    const leadPrice = await this.configRepo.getLeadPrice()
+    if (wallet.balance < leadPrice) {
+      console.error("Insufficient wallet balance: ", wallet)
+      return new Error("Insufficient wallet balance")
+    }
+
     const allTreatments = await this.treatmentRepo.getAll()
 
     if (!props.treatment_ids.some(treatmentId => allTreatments.map(t => t.id).includes(treatmentId))) {
@@ -40,13 +61,29 @@ export class SendLeadToParnterUseCase {
 
     const message = createSendLeadToPartnerMessage(lead)
     const sendMessageResult = await this.messagingService.sendMessage({
-      phone_number: partner.phone_number,
+      phone_number: lead.phone_number,
       message
     })
 
     if (sendMessageResult instanceof Error) {
       console.error("Failed to send message to partner: ", sendMessageResult);
       return new Error("Failed to send message to partner");
+    }
+
+    const transaction = new Transaction({
+      wallet_id: wallet.id,
+      status: TransactionStatus.RECEIVED,
+      type: TransactionType.EXPENSE,
+      amount: leadPrice,
+      lead,
+      lead_price: leadPrice
+    })
+
+    const debitWalletResult = wallet.debit(leadPrice)
+
+    if (debitWalletResult instanceof Error) {
+      console.error("Error debiting partner wallet: ", debitWalletResult)
+      return debitWalletResult
     }
 
     const leadDispatch = new LeadDispatch({
@@ -59,8 +96,10 @@ export class SendLeadToParnterUseCase {
       }),
       message_sent: message
     })
-    await this.leadDispatchRepo.create(leadDispatch);
     
+    await this.walletRepo.update(wallet);
+    await this.transactionRepo.create(transaction);
+    await this.leadDispatchRepo.create(leadDispatch);
     return void 0;
   }
 }

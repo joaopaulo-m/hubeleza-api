@@ -33,7 +33,11 @@ export class PrismaInviteTokenRepository implements IInviteTokenRepository {
   }
 
   async getAll() {
-    const tokens = await prisma.inviteToken.findMany()
+    const tokens = await prisma.inviteToken.findMany({
+      orderBy: {
+        expires_at: "desc"
+      }
+    })
 
     return tokens.map(InviteTokenMapper.toDomain)
   }

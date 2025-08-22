@@ -10,8 +10,9 @@ export type TransactionProps = {
   type: TransactionType
   status: TransactionStatus
   amount: number
-  lead_price: number
   created_at: number
+  external_id?: string
+  lead_price?: number
   lead?: Lead
 }
 
@@ -24,6 +25,10 @@ export class Transaction {
 
   get wallet_id() {
     return this.props.wallet_id
+  }
+
+  get external_id() {
+    return this.props.external_id
   }
 
   get type() {

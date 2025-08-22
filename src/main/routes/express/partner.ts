@@ -18,6 +18,7 @@ router.post("/partners", verifyToken([AccountType.ADMIN]), async (req: Request, 
     email,
     phone_number,
     cep,
+    document,
     treatment_ids
   } = req.body;
 
@@ -26,6 +27,7 @@ router.post("/partners", verifyToken([AccountType.ADMIN]), async (req: Request, 
     email,
     phone_number,
     cep,
+    document,
     treatment_ids
   })
   res.status(statusCode).json(response);
@@ -39,6 +41,7 @@ router.post("/partners/invite-tokens/:invite_token", async (req: Request, res: R
     password,
     phone_number,
     cep,
+    document,
     treatment_ids
   } = req.body;
   const { invite_token } = req.params 
@@ -50,6 +53,7 @@ router.post("/partners/invite-tokens/:invite_token", async (req: Request, res: R
     password,
     phone_number,
     cep,
+    document,
     treatment_ids
   })
   res.status(statusCode).json(response);

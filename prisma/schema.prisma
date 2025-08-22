@@ -8,6 +8,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Config {
+  id         String @id @default(uuid())
+  lead_price Int    @default(0)
+
+  @@map("configs")
+}
+
 model Treatment {
   id    String @id
   name  String
@@ -85,6 +92,7 @@ model PartnerTreatment {
 model Wallet {
   id          String  @id
   partner_id  String  @unique
+  document    String
   balance     Int
   external_id String?
 
@@ -95,14 +103,15 @@ model Wallet {
 }
 
 model Transaction {
-  id         String  @id
-  wallet_id  String
-  status     String
-  type       String
-  amount     Int
-  lead_price Int
-  created_at BigInt
-  lead_id    String?
+  id          String  @id
+  wallet_id   String
+  status      String
+  type        String
+  amount      Int
+  created_at  BigInt
+  external_id String?
+  lead_price  Int?
+  lead_id     String?
 
   wallet Wallet @relation(fields: [wallet_id], references: [id])
   lead   Lead?  @relation(fields: [lead_id], references: [id])

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import type { ILeadRepository, RecentLead } from "../../../application/contracts/repos/lead";
+import type { FetchLeadsOptions, ILeadRepository, RecentLead } from "../../../application/contracts/repos/lead";
 import { LeadMapper } from "../../../application/mappers/lead";
 import type { Lead } from "../../../domain/entities/lead";
 import { prisma } from "../../services/prisma";
@@ -22,6 +22,10 @@ export class PrismaLeadRepository implements ILeadRepository {
     return prisma.lead.count()
   }
 
+  async countAllDispatches(): Promise<number> {
+    return prisma.leadDispatch.count();
+  }
+
   async countConverted(): Promise<number> {
     const converted = await prisma.leadDispatch.findMany({
       distinct: ['lead_id'],
@@ -29,6 +33,32 @@ export class PrismaLeadRepository implements ILeadRepository {
     })
   
     return converted.length
+  }
+
+  async countByPartnerId(partner_id: string): Promise<number> {
+    return await prisma.leadDispatch.count({
+      where: {
+        partner_id
+      }
+    })
+  }
+
+  async countByPartnerPerTreatment(partner_id: string) {
+    const raw = await prisma.$queryRawUnsafe<
+      { treatment: string; count: number }[]
+    >(`
+      SELECT t.name AS treatment, COUNT(*) AS count
+      FROM leads_dispatch ld
+      JOIN leads_dispatch_treatments ldt ON ld.id = ldt.lead_dispatch_id
+      JOIN treatments t ON t.id = ldt.treatment_id
+      WHERE ld.partner_id = $1
+      GROUP BY t.name
+    `, partner_id);
+  
+    return raw.map(count => ({
+      treatment: count.treatment,
+      count: Number(count.count)
+    }));
   }
 
   async findById(id: string) {
@@ -98,6 +128,52 @@ export class PrismaLeadRepository implements ILeadRepository {
         status: d.message_sent ? 'Enviado' : 'Pendente',
         created_at: Number(d.created_at),
       }))
+  }
+
+  async getAllByPartnerId(partner_id: string, options?: FetchLeadsOptions) {
+    const leads = await prisma.lead.findMany({
+      where: {
+        name: options?.name
+          ? {
+              contains: options.name,
+              mode: "insensitive"
+            }
+          : undefined,
+        leads_dispatch: {
+          some: {
+            partner_id
+          }
+        },
+        leads_treatments: {
+          some: {
+            treatment_id: {
+              in: options?.treatment_ids
+            }
+          }
+        },
+        created_at: {
+          gte: options?.start_date,
+          lte: options?.end_date
+        }
+      },
+      include: {
+        leads_treatments: {
+          include: {
+            treatment: true
+          }
+        },
+      },
+      take: 20,
+      skip: options ? 20 * (options?.page - 1) : undefined,
+      orderBy: {
+        created_at: 'desc'
+      }
+    });
+
+    return {
+      items: leads.map(LeadMapper.toDomain),
+      total: await prisma.lead.count({ where: { leads_dispatch: { some: { partner_id } } } })
+    };
   }
 
   async getAll() {

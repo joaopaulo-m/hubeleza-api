@@ -1,3 +1,4 @@
+import type { FetchFormsOptions } from "../../../application/contracts/repos/form";
 import type { GetAllFormsUseCase } from "../../../application/use-cases/form/get-all";
 
 export class GetAllFormsController {
@@ -5,8 +6,8 @@ export class GetAllFormsController {
     private readonly useCase: GetAllFormsUseCase,
   ){}
 
-  async handle() {
-    const result = await this.useCase.execute();
+  async handle(props: FetchFormsOptions) {
+    const result = await this.useCase.execute(props);
     
     if (result instanceof Error) {
       return {
