@@ -1,6 +1,7 @@
 import { TransactionStatus } from "../../../domain/enums/transaction-status";
 import type { ITransactionRepository } from "../../contracts/repos/transaction";
 import type { IWalletRepository } from "../../contracts/repos/wallet";
+import type { ConfirmPartnerAccountUseCase } from "../partner/confirm-account";
 
 export interface ConfirmWalletPaymentDto {
   external_transaction_id: string
@@ -10,6 +11,7 @@ export class ConfirmWalletPaymentUseCase {
   constructor(
     private readonly transactionRepo: ITransactionRepository,
     private readonly walletRepo: IWalletRepository,
+    private readonly confirmPartnerAccountUseCase: ConfirmPartnerAccountUseCase
   ){}
 
   async execute(props: ConfirmWalletPaymentDto): Promise<Error | void> {
@@ -39,7 +41,8 @@ export class ConfirmWalletPaymentUseCase {
       return updateTransactionResult
     }
 
-    const creditWalletResult = wallet.credit(transaction.amount)
+    const creditWalletValue = transaction.bonus_amount ? transaction.amount + transaction.bonus_amount : transaction.amount
+    const creditWalletResult = wallet.credit(creditWalletValue)
 
     if (creditWalletResult instanceof Error) {
       console.error("Error crediting wallet: ", creditWalletResult)
@@ -47,6 +50,16 @@ export class ConfirmWalletPaymentUseCase {
 
     await this.walletRepo.update(wallet)
     await this.transactionRepo.update(transaction)
+
+    if (wallet.transactions.length === 1) {
+      const confirmPartnerAccountResult = await this.confirmPartnerAccountUseCase.execute({
+        partner_id: wallet.partner_id
+      })
+
+      if (confirmPartnerAccountResult instanceof Error) {
+        console.error("Error confirming partner account: ", confirmPartnerAccountResult)
+      }
+    }
 
     return void 0;
   }

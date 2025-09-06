@@ -14,6 +14,7 @@ import adminRoutes from './routes/express/admin'
 import inviteTokenRoutes from './routes/express/invite-token'
 import walletRoutes from './routes/express/wallet'
 import transactionRoutes from './routes/express/transaction'
+import operatorRoutes from './routes/express/operator'
 
 const app = express();
 
@@ -33,5 +34,6 @@ app.use(adminRoutes)
 app.use(inviteTokenRoutes)
 app.use(walletRoutes)
 app.use(transactionRoutes)
+app.use(operatorRoutes)
 
 export { app }

@@ -1,6 +1,7 @@
 import { Transaction } from "../../../domain/entities/transaction"
 import { TransactionStatus } from "../../../domain/enums/transaction-status"
 import { TransactionType } from "../../../domain/enums/transaction-type"
+import { FIRST_TRANSACTION_BONUS } from "../../../shared/constants/first-transaction-bonus"
 import type { ITransactionRepository } from "../../contracts/repos/transaction"
 import type { IWalletRepository } from "../../contracts/repos/wallet"
 import type { IPaymentService } from "../../contracts/services/payment"
@@ -64,7 +65,8 @@ export class CreateWalletPaymentUseCase {
       external_id: transaction_id,
       status: TransactionStatus.PENDING_PAYMENT,
       type: TransactionType.INCOME,
-      amount: props.amount
+      amount: props.amount,
+      bonus_amount: wallet.transactions.length === 0 ? FIRST_TRANSACTION_BONUS : undefined
     })
     await this.transactionRepo.create(transaction)
 

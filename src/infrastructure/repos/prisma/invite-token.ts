@@ -1,5 +1,6 @@
 import type { IInviteTokenRepository } from "../../../application/contracts/repos/invite-token";
 import { InviteTokenMapper } from "../../../application/mappers/invite-token";
+import type { FetchInviteTokensDto } from "../../../application/use-cases/invite-token/get-all";
 import type { InviteToken } from "../../../domain/entities/invite-token";
 import { prisma } from "../../services/prisma";
 
@@ -32,8 +33,20 @@ export class PrismaInviteTokenRepository implements IInviteTokenRepository {
     return null
   }
 
-  async getAll() {
+  async getAll(props?: FetchInviteTokensDto) {
     const tokens = await prisma.inviteToken.findMany({
+      where: {
+        name: props?.name
+          ? {
+              contains: props.name,
+              mode: "insensitive"
+            }
+          : undefined,
+        created_at: {
+          gte: props?.start_date,
+          lte: props?.end_date
+        }
+      },
       orderBy: {
         expires_at: "desc"
       }

@@ -4,6 +4,8 @@ import { Admin } from "../../../domain/entities/admin";
 import { Partner } from "../../../domain/entities/partner";
 import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
+import type { Operator } from '../../../domain/entities/operator';
+import type { IOperatorRepository } from '../../contracts/repos/operator';
 
 export interface DefinePasswordDto {
   account_id: string
@@ -13,7 +15,8 @@ export interface DefinePasswordDto {
 export class DefinePasswordUseCase {
   constructor(
     private readonly partnerRepo: IPartnerRepository,
-    private readonly adminRepo: IAdminRepository
+    private readonly adminRepo: IAdminRepository,
+    private readonly operatorRepo: IOperatorRepository
   ){}
 
   async execute(props: DefinePasswordDto): Promise<Error | void> {
@@ -41,14 +44,18 @@ export class DefinePasswordUseCase {
     return void 0;
   }
 
-  private async findAccount(id: string): Promise<null | (Partner | Admin)> {
-    const partner = await this.partnerRepo.findById(id)
+  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin)> {
+    const partner = await this.partnerRepo.findByEmail(email)
 
     if (partner) return partner
 
-    const admin = await this.adminRepo.findById(id)
+    const admin = await this.adminRepo.findByEmail(email)
 
     if (admin) return admin
+
+    const operator = await this.operatorRepo.findByEmail(email)
+
+    if (operator) return operator
     
     return null
   }

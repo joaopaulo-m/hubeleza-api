@@ -1,0 +1,1 @@
+export const FIRST_TRANSACTION_BONUS = 30000 // R$ 300,00

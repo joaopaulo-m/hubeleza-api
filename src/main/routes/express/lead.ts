@@ -78,4 +78,20 @@ router.get("/leads/partner", verifyToken([AccountType.PARTNER]), async (req: Req
   res.status(statusCode).json(response);
 })
 
+router.get("/leads/partner/:partner_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
+  const controller = makeGetPartnerLeadsController();
+  const { partner_id } = req.params
+  const { name, treatment_ids, start_date, end_date, page } = req.query
+
+  const { statusCode, response } = await controller.handle({ 
+    partner_id,
+    page: page ? Number(page) : 1,
+    name: name ? name.toString() : undefined,
+    treatment_ids: treatment_ids ? (treatment_ids as string).split(",") : undefined,
+    start_date: start_date ? Number(start_date) : undefined,
+    end_date: end_date ? Number(end_date) : undefined
+  })
+  res.status(statusCode).json(response);
+})
+
 export default router;

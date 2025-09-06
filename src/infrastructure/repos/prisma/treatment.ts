@@ -1,5 +1,7 @@
 import type { ITreatmentRepository, TreatmentPerformance } from "../../../application/contracts/repos/treatment";
 import { TreatmentMapper } from "../../../application/mappers/treatment";
+import { TreatmentStatePriceMapper } from "../../../application/mappers/treatment-state-price";
+import type { FetchTreatmentsDto } from "../../../application/use-cases/treatment/get-all";
 import type { Treatment } from "../../../domain/entities/treatment";
 import { prisma } from "../../services/prisma";
 
@@ -8,6 +10,9 @@ export class PrismaTreatmentRepository implements ITreatmentRepository {
     const treatment = await prisma.treatment.findFirst({
       where: {
         name
+      },
+      include: {
+        state_prices: true
       }
     });
 
@@ -20,6 +25,9 @@ export class PrismaTreatmentRepository implements ITreatmentRepository {
     const treatment = await prisma.treatment.findUnique({
       where: {
         id
+      },
+      include: {
+        state_prices: true
       }
     });
 
@@ -71,24 +79,52 @@ export class PrismaTreatmentRepository implements ITreatmentRepository {
     }));
   }
 
-  async getAll() {
-    const treatments = await prisma.treatment.findMany();
+  async getAll(props?: FetchTreatmentsDto) {
+    const treatments = await prisma.treatment.findMany({
+      where: {
+        name: props?.name
+          ? {
+              contains: props.name,
+              mode: "insensitive"
+            }
+          : undefined,
+        category: props?.category
+      },
+      include: {
+        state_prices: true
+      }
+    });
 
     return treatments.map(TreatmentMapper.toDomain);
   }
 
   async create(treatment: Treatment) {
-    const treatmentData = TreatmentMapper.toPersistence(treatment);
+    const data = {
+      ...TreatmentMapper.toPersistence(treatment),
+      state_prices: undefined
+    }
 
     await prisma.treatment.create({
-      data: treatmentData
+      data: {
+        ...data,
+        state_prices: {
+          createMany: {
+            data: treatment.state_prices.map(statePrice => ({
+              ...TreatmentStatePriceMapper.toPersistence(statePrice),
+              treatment_id: undefined
+            })),
+            skipDuplicates: true
+          }
+        }
+      }
     });
   }
 
   async update(treatment: Treatment) {
     const data = {
       ...TreatmentMapper.toPersistence(treatment),
-      id: undefined
+      id: undefined,
+      state_prices: undefined
     };
 
     await prisma.treatment.update({

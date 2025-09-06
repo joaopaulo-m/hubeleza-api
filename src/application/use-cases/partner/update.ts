@@ -5,8 +5,13 @@ import type { IGeolocationService } from "../../contracts/services/geolocation";
 export interface UpdatePartnerDto {
   partner_id: string
   name?: string
+  company_name?: string
+  cpf?: string
+  cnpj?: string
   phone_number?: string
   cep?: string
+  city?: string
+  state?: string
   treatment_ids?: string[]
 }
 
@@ -26,6 +31,18 @@ export class UpdatePartnerUseCase {
 
     if (props.name) {
       partnerExists.updateName(props.name)
+    }
+
+    if (props.company_name) {
+      partnerExists.updateCompanyName(props.company_name)
+    }
+
+    if (props.cnpj) {
+      partnerExists.updateCnpj(props.cnpj)
+    }
+
+    if (props.cpf) {
+      partnerExists.updateCpf(props.cpf)
     }
 
     if (props.phone_number) {
@@ -62,6 +79,11 @@ export class UpdatePartnerUseCase {
       const { lat, lng } = getCoordinatesResult
       partnerExists.updateLat(lat)
       partnerExists.updateLng(lng)
+
+      if (props.state && props.city) {
+        partnerExists.updateCity(props.city)
+        partnerExists.updateState(props.state)
+      }
     }
     
     await this.partnerRepo.update(partnerExists)

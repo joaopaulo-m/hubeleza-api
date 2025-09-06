@@ -4,6 +4,8 @@ import type { FindNearestPartnersProps, IPartnerRepository } from "../../../appl
 import { PartnerMapper } from "../../../application/mappers/partner";
 import type { Partner } from "../../../domain/entities/partner";
 import { prisma } from "../../services/prisma";
+import { MAX_NEGATIVE_WALLET_BALANCE } from "../../../shared/constants/max-negative-wallet-balance";
+import type { FetchPartersDto } from "../../../application/use-cases/partner/get-all";
 
 export class PrismaPartnerRepository implements IPartnerRepository {
   async countAll(): Promise<number> {
@@ -56,7 +58,11 @@ export class PrismaPartnerRepository implements IPartnerRepository {
       include: {
         partners_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -75,7 +81,11 @@ export class PrismaPartnerRepository implements IPartnerRepository {
       include: {
         partners_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -94,7 +104,11 @@ export class PrismaPartnerRepository implements IPartnerRepository {
       include: {
         partners_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -105,7 +119,30 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     return PartnerMapper.toDomain(partner);
   }
 
-  async findNearestPartners({ lat, lng, limit = 5, lead_price }: FindNearestPartnersProps) {
+  async findByCpf(cpf: string) {
+    const partner = await prisma.partner.findFirst({
+      where: {
+        cpf
+      },
+      include: {
+        partners_treatments: {
+          include: {
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!partner) return null;
+
+    return PartnerMapper.toDomain(partner);
+  }
+
+  async findNearestPartners({ lat, lng, limit = 5 }: FindNearestPartnersProps) {
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
   
@@ -120,10 +157,10 @@ export class PrismaPartnerRepository implements IPartnerRepository {
         ) AS distance
       FROM partners p
       JOIN wallets w ON w.partner_id = p.id
-      WHERE w.balance >= $3
+      WHERE w.balance > $3
       ORDER BY distance
       LIMIT $4
-    `, parsedLat, parsedLng, lead_price, limit);
+    `, parsedLat, parsedLng, MAX_NEGATIVE_WALLET_BALANCE, limit);
   
     const partnerIds = rawPartners.map(p => p.id);
   
@@ -134,7 +171,11 @@ export class PrismaPartnerRepository implements IPartnerRepository {
       include: {
         partners_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -151,12 +192,43 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     return result;
   }
 
-  async getAll() {
+  async getAll(props?: FetchPartersDto) {
     const partners = await prisma.partner.findMany({
+      where: {
+        name: props?.name
+        ? {
+            contains: props.name,
+            mode: "insensitive"
+          }
+        : undefined,
+        city: props?.city
+        ? {
+            contains: props.city,
+            mode: "insensitive"
+          }
+        : undefined,
+        state: props?.state,
+        status: props?.status,
+        created_at: {
+          gte: props?.start_date,
+          lte: props?.end_date
+        },
+        partners_treatments: {
+          some: {
+            treatment_id: {
+              in: props?.treatment_ids
+            }
+          }
+        }
+      },
       include: {
         partners_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       },

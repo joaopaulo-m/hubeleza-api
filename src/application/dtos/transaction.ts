@@ -9,4 +9,5 @@ export interface TransactionDto {
   created_at: number
   lead_price?: number
   lead?: LeadDto
+  bonus_amount?: number
 }

@@ -1,10 +1,14 @@
 import { Treatment } from "../../domain/entities/treatment"
+import type { TreatmentCategory } from "../../domain/enums/treatment-category"
 import type { TreatmentDto } from "../dtos/treatment"
+import { TreatmentStatePriceMapper, type PersistenceTreatmentStatePrice } from "./treatment-state-price"
 
 export type PersistenceTreatment = {
   id: string
   name: string
+  category: string
   price: number
+  state_prices: PersistenceTreatmentStatePrice[]
 }
 
 export class TreatmentMapper {
@@ -12,7 +16,9 @@ export class TreatmentMapper {
     return new Treatment({
       id: raw.id,
       name: raw.name,
-      price: raw.price
+      category: raw.category as TreatmentCategory,
+      price: raw.price,
+      state_prices: raw.state_prices.map(TreatmentStatePriceMapper.toDomain)
     })
   }
 
@@ -20,7 +26,9 @@ export class TreatmentMapper {
     return {
       id: domain.id,
       name: domain.name,
-      price: domain.price
+      category: domain.category,
+      price: domain.price,
+      state_prices: domain.state_prices.map(TreatmentStatePriceMapper.toPersistence)
     }
   }
 
@@ -28,7 +36,9 @@ export class TreatmentMapper {
     return {
       id: domain.id,
       name: domain.name,
-      price: domain.price
+      category: domain.category,
+      price: domain.price,
+      state_prices: domain.state_prices.map(TreatmentStatePriceMapper.toDto)
     }
   }
 }

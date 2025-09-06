@@ -9,7 +9,7 @@ import { AccountType } from "../../../shared/enums/account-type";
 
 const router = Router()
 
-router.post("/forms", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.post("/forms", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeCreateFormController();
   const { name, treatment_ids, external_form_id } = req.body;
 
@@ -21,7 +21,7 @@ router.post("/forms", verifyToken([AccountType.ADMIN]), async (req: Request, res
   res.status(statusCode).json(response);
 })
 
-router.patch("/forms/:form_id", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.patch("/forms/:form_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeUpdateFormController();
   const { form_id } = req.params;
   const { name, external_form_id, treatment_ids } = req.body;
@@ -35,7 +35,7 @@ router.patch("/forms/:form_id", verifyToken([AccountType.ADMIN]), async (req: Re
   res.status(statusCode).json(response);
 })
 
-router.delete("/forms/:form_id", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.delete("/forms/:form_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeDeleteFormController();
   const { form_id } = req.params;
   
@@ -43,7 +43,7 @@ router.delete("/forms/:form_id", verifyToken([AccountType.ADMIN]), async (req: R
   res.status(statusCode).json(response);
 })
 
-router.get("/forms", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.get("/forms", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeGetAllFormsController();
   const { name, treatment_ids } = req.query
   

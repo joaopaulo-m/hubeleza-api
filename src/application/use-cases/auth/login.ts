@@ -1,11 +1,13 @@
 import bcrypt from 'bcryptjs'
 
 import { Partner } from "../../../domain/entities/partner";
-import type { Admin } from "../../../domain/entities/admin";
+import { Admin } from "../../../domain/entities/admin";
 import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import type { IJwtService } from "../../contracts/services/jwt";
 import { AccountType } from "../../../shared/enums/account-type";
+import { Operator } from '../../../domain/entities/operator';
+import type { IOperatorRepository } from '../../contracts/repos/operator';
 
 export interface LoginDto {
   email: string
@@ -16,6 +18,7 @@ export class LoginUseCase {
   constructor(
     private readonly partnerRepo: IPartnerRepository,
     private readonly adminRepo: IAdminRepository,
+    private readonly operatorRepo: IOperatorRepository,
     private readonly jwtService: IJwtService,
   ){}
 
@@ -27,9 +30,14 @@ export class LoginUseCase {
     }
 
     if (account.password === "not-defined") {
+      let accountType: AccountType = AccountType.PARTNER
+
+      if (account instanceof Admin) accountType = AccountType.ADMIN
+      if (account instanceof Operator) accountType = AccountType.OPERATOR
+
       const token = this.jwtService.sign({
         account_id: account.id,
-        account_type: account instanceof Partner ? AccountType.PARTNER : AccountType.ADMIN
+        account_type: accountType
       })
 
       if (token instanceof Error) {
@@ -66,15 +74,19 @@ export class LoginUseCase {
     }
   }
 
-  private async findAccount(email: string): Promise<null | (Partner | Admin)> {
-      const partner = await this.partnerRepo.findByEmail(email)
-  
-      if (partner) return partner
-  
-      const admin = await this.adminRepo.findByEmail(email)
-  
-      if (admin) return admin
-      
-      return null
-    }
+  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin)> {
+    const partner = await this.partnerRepo.findByEmail(email)
+
+    if (partner) return partner
+
+    const admin = await this.adminRepo.findByEmail(email)
+
+    if (admin) return admin
+
+    const operator = await this.operatorRepo.findByEmail(email)
+
+    if (operator) return operator
+    
+    return null
+  }
 }

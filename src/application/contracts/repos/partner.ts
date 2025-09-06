@@ -1,7 +1,8 @@
 import type { Partner } from "../../../domain/entities/partner";
+import type { FetchPartersDto } from "../../use-cases/partner/get-all";
 
 export type FindNearestPartnersProps = {
-  lat: string, lng: string, limit?: number, lead_price: number
+  lat: string, lng: string, limit?: number
 }
 
 export interface IPartnerRepository {
@@ -12,8 +13,9 @@ export interface IPartnerRepository {
   findById: (id: string) => Promise<null | Partner>
   findByEmail: (email: string) => Promise<null | Partner>
   findByPhoneNumber: (phone_number: string) => Promise<null | Partner>
+  findByCpf: (cpf: string) => Promise<null | Partner>
   findNearestPartners: (props: FindNearestPartnersProps) => Promise<Partner[]>
-  getAll: () => Promise<Partner[]>
+  getAll: (props?: FetchPartersDto) => Promise<Partner[]>
   create: (partner: Partner) => Promise<void>
   update: (partner: Partner) => Promise<void>
   delete: (id: string) => Promise<void>

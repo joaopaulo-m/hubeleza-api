@@ -8,7 +8,7 @@ import { makeGetAdminDashboardDataController } from "../../factories/dashboard/g
 
 const router = Router()
 
-router.get("/dashboards", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.get("/dashboards", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeGetAdminDashboardDataController();
   
   const { statusCode, response } = await controller.handle()
@@ -16,7 +16,7 @@ router.get("/dashboards", verifyToken([AccountType.ADMIN]), async (req: Request,
   res.status(statusCode).json(response);
 })
 
-router.get("/dashboards/treatments/:treatment_id", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.get("/dashboards/treatments/:treatment_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const { treatment_id } = req.params
   const controller = makeGetTreatmentDataController();
   

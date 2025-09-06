@@ -31,7 +31,11 @@ export class PrismaTransactionRepository implements ITransactionRepository {
           include: {
             leads_treatments: {
               include: {
-                treatment: true
+                treatment: {
+                  include: {
+                    state_prices: true
+                  }
+                }
               }
             }
           }
@@ -56,7 +60,11 @@ export class PrismaTransactionRepository implements ITransactionRepository {
           include: {
             leads_treatments: {
               include: {
-                treatment: true
+                treatment: {
+                  include: {
+                    state_prices: true
+                  }
+                }
               }
             }
           }
@@ -83,7 +91,11 @@ export class PrismaTransactionRepository implements ITransactionRepository {
           include: {
             leads_treatments: {
               include: {
-                treatment: true
+                treatment: {
+                  include: {
+                    state_prices: true
+                  }
+                }
               }
             }
           }

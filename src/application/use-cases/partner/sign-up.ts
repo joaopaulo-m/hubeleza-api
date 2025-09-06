@@ -8,16 +8,30 @@ import type { IGeolocationService } from "../../contracts/services/geolocation";
 import type { IWalletRepository } from '../../contracts/repos/wallet';
 import type { IPaymentService } from '../../contracts/services/payment';
 import { Wallet } from '../../../domain/entities/wallet';
+import type { State } from '../../../domain/enums/state';
+import type { CreateWalletPaymentUseCase } from '../wallet/create-payment';
+import { PARTNER_INITAL_PAYMENT_AMOUNT } from '../../../shared/constants/inital-partner-payment-amount';
+import type { AxiosError } from 'axios';
 
 export interface SignPartnerUpDto {
   invite_token: string
   name: string
+  company_name: string
+  cpf: string
+  cnpj?: string
   email: string
   password: string
   phone_number: string
   cep: string
-  document: string
+  city: string
+  state: string
   treatment_ids: string[]
+}
+
+export type SignPartnerUpReturn = {
+  transaction_id: string
+  qr_code: string
+  pix_copy_paste_code: string
 }
 
 export class SignPartnerUpUseCase {
@@ -27,10 +41,11 @@ export class SignPartnerUpUseCase {
     private readonly treatmentRepo: ITreatmentRepository,
     private readonly walletRepo: IWalletRepository,
     private readonly geolocationService: IGeolocationService,
-    private readonly paymentService: IPaymentService
+    private readonly paymentService: IPaymentService,
+    private readonly createWalletPaymentUseCase: CreateWalletPaymentUseCase
   ){}
 
-  async execute(props: SignPartnerUpDto): Promise<Error | void> {
+  async execute(props: SignPartnerUpDto): Promise<Error | SignPartnerUpReturn> {
     const inviteToken = await this.inviteTokenRepo.findByToken(props.invite_token)
 
     if (!inviteToken) {
@@ -41,7 +56,7 @@ export class SignPartnerUpUseCase {
       return new Error("Invite token expired")
     }
 
-    const partnerAlreadyExists = await this.partnerRepo.findByPhoneNumber(props.phone_number)
+    const partnerAlreadyExists = await this.partnerRepo.findByCpf(props.cpf)
     
     if (partnerAlreadyExists) {
       return new Error("Partner already exists")
@@ -68,11 +83,16 @@ export class SignPartnerUpUseCase {
 
     const passwordHash = await bcrypt.hash(props.password, 10)
     const partner = new Partner({
+      company_name: props.company_name,
+      cpf: props.cpf,
+      cnpj: props.cnpj,
       email: props.email,
       password: passwordHash,
       name: props.name,
       phone_number: props.phone_number,
       cep: props.cep,
+      city: props.city,
+      state: props.state as State,
       lat,
       lng,
       treatments: treatments.filter(treatment => props.treatment_ids.includes(treatment.id))
@@ -80,19 +100,19 @@ export class SignPartnerUpUseCase {
 
     const createWalletResult = await this.paymentService.createWallet({
       name: partner.name,
-      document: props.document,
+      document: props.cpf,
       phone_number: props.phone_number
     })
 
     if (createWalletResult instanceof Error) {
-      console.error("Error creating partner wallet: ", createWalletResult)
+      console.error("Error creating partner wallet: ", (createWalletResult as AxiosError).response?.data)
       return createWalletResult
     }
 
     const partnerWallet = new Wallet({
       partner_id: partner.id,
       external_id: createWalletResult.wallet_id,
-      document: props.document,
+      document: props.cpf,
       balance: 0,
       transactions: []
     })
@@ -100,6 +120,16 @@ export class SignPartnerUpUseCase {
     await this.partnerRepo.create(partner)
     await this.walletRepo.create(partnerWallet)
     await this.inviteTokenRepo.delete(inviteToken.id)
-    return void 0;
+
+    const createInitialPaymentResult = await this.createWalletPaymentUseCase.execute({
+      wallet_id: partnerWallet.id,
+      amount: PARTNER_INITAL_PAYMENT_AMOUNT
+    })
+
+    if (createInitialPaymentResult instanceof Error) {
+      return new Error("Error creating partner initial payment: ", createInitialPaymentResult)
+    }
+
+    return createInitialPaymentResult;
   }
 }

@@ -69,7 +69,11 @@ export class PrismaLeadRepository implements ILeadRepository {
       include: {
         leads_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -88,7 +92,11 @@ export class PrismaLeadRepository implements ILeadRepository {
       include: {
         leads_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -159,7 +167,11 @@ export class PrismaLeadRepository implements ILeadRepository {
       include: {
         leads_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         },
       },
@@ -181,7 +193,11 @@ export class PrismaLeadRepository implements ILeadRepository {
       include: {
         leads_treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }

@@ -1,4 +1,5 @@
 import type { Treatment } from "../../../domain/entities/treatment";
+import type { FetchTreatmentsDto } from "../../use-cases/treatment/get-all";
 
 export interface ITreatmentRepository {
   findByName: (name: string) => Promise<null | Treatment>
@@ -6,7 +7,7 @@ export interface ITreatmentRepository {
   countByPartnerId: (partner_id: string) => Promise<number>
   getTreatmentPerformance: () => Promise<TreatmentPerformance[]>
   getTopTreatmentsByLeadCount(limit: number): Promise<{ name: string, total_leads: number }[]>
-  getAll: () => Promise<Treatment[]>
+  getAll: (props?: FetchTreatmentsDto) => Promise<Treatment[]>
   create: (treatment: Treatment) => Promise<void>
   update: (treatment: Treatment) => Promise<void>
   delete: (id: string) => Promise<void>

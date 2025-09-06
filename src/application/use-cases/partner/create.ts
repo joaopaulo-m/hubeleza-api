@@ -1,5 +1,6 @@
 import { Partner } from "../../../domain/entities/partner";
 import { Wallet } from "../../../domain/entities/wallet";
+import type { State } from "../../../domain/enums/state";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import type { ITreatmentRepository } from "../../contracts/repos/treatment";
 import type { IWalletRepository } from "../../contracts/repos/wallet";
@@ -8,10 +9,14 @@ import type { IPaymentService } from "../../contracts/services/payment";
 
 export interface CreatePartnerDto {
   name: string
+  company_name: string
+  cpf: string
+  cnpj?: string
   email: string
   phone_number: string
   cep: string
-  document: string
+  city: string
+  state: string
   treatment_ids: string[]
 }
 
@@ -53,8 +58,13 @@ export class CreatePartnerUseCase {
       email: props.email,
       password: "not-defined",
       name: props.name,
+      company_name: props.company_name,
+      cpf: props.cpf,
+      cnpj: props.cnpj,
       phone_number: props.phone_number,
       cep: props.cep,
+      city: props.city,
+      state: props.state as State,
       lat,
       lng,
       treatments: treatments.filter(treatment => props.treatment_ids.includes(treatment.id))
@@ -62,7 +72,7 @@ export class CreatePartnerUseCase {
 
     const createWalletResult = await this.paymentService.createWallet({
       name: partner.name,
-      document: props.document,
+      document: props.cpf,
       phone_number: props.phone_number
     })
 
@@ -74,7 +84,7 @@ export class CreatePartnerUseCase {
     const partnerWallet = new Wallet({
       partner_id: partner.id,
       external_id: createWalletResult.wallet_id,
-      document: props.document,
+      document: props.cpf,
       balance: 0,
       transactions: []
     })

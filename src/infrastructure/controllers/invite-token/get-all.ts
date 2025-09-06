@@ -1,12 +1,12 @@
-import type { GetAllInviteTokensUseCase } from "../../../application/use-cases/invite-token/get-all";
+import type { FetchInviteTokensDto, GetAllInviteTokensUseCase } from "../../../application/use-cases/invite-token/get-all";
 
 export class GetAllInviteTokensController {
   constructor(
     private readonly useCase: GetAllInviteTokensUseCase,
   ){}
 
-  async handle() {
-    const result = await this.useCase.execute();
+  async handle(props: FetchInviteTokensDto) {
+    const result = await this.useCase.execute(props);
     
     if (result instanceof Error) {
       return {

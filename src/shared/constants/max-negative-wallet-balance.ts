@@ -1,0 +1,1 @@
+export const MAX_NEGATIVE_WALLET_BALANCE = -7500

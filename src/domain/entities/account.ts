@@ -43,6 +43,10 @@ export abstract class Account {
     this.props.name = name
   }
 
+  public updateEmail(email: string) {
+    this.props.email = email
+  }
+
   public updatePassword(password: string) {
     this.props.password = password
   }

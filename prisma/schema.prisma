@@ -16,16 +16,29 @@ model Config {
 }
 
 model Treatment {
-  id    String @id
-  name  String
-  price Int    @default(0)
+  id       String @id
+  name     String
+  price    Int    @default(0)
+  category String
 
   partners_treatments PartnerTreatment[]
   leads_treatments    LeadTreatment[]
   forms               FormTreatment[]
   leads_dispatch      LeadDispatchTreatment[]
+  state_prices        TreatmentStatePrice[]
 
   @@map("treatments")
+}
+
+model TreatmentStatePrice {
+  id           String @id
+  treatment_id String
+  state        String
+  price        Int
+
+  treatment Treatment @relation(fields: [treatment_id], references: [id], onDelete: Cascade)
+
+  @@map("treatment_state_prices")
 }
 
 model Form {
@@ -60,14 +73,31 @@ model Admin {
   @@map("admins")
 }
 
+model Operator {
+  id         String @id
+  name       String
+  email      String
+  password   String
+  created_at BigInt
+  created_by String
+
+  @@map("operators")
+}
+
 model Partner {
-  id           String @id
+  id           String  @id
   name         String
+  company_name String
+  cpf          String
+  cnpj         String?
+  status       String
   email        String
   password     String
   created_at   BigInt
   phone_number String
   cep          String
+  city         String
+  state        String
   lat          String
   lng          String
 
@@ -96,25 +126,26 @@ model Wallet {
   balance     Int
   external_id String?
 
-  partner      Partner       @relation(fields: [partner_id], references: [id])
+  partner      Partner       @relation(fields: [partner_id], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
   @@map("wallets")
 }
 
 model Transaction {
-  id          String  @id
-  wallet_id   String
-  status      String
-  type        String
-  amount      Int
-  created_at  BigInt
-  external_id String?
-  lead_price  Int?
-  lead_id     String?
+  id           String  @id
+  wallet_id    String
+  status       String
+  type         String
+  amount       Int
+  created_at   BigInt
+  external_id  String?
+  lead_price   Int?
+  lead_id      String?
+  bonus_amount Int?
 
-  wallet Wallet @relation(fields: [wallet_id], references: [id])
-  lead   Lead?  @relation(fields: [lead_id], references: [id])
+  wallet Wallet @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  lead   Lead?  @relation(fields: [lead_id], references: [id], onDelete: Cascade)
 
   @@map("transactions")
 }
@@ -172,10 +203,12 @@ model LeadDispatchTreatment {
 }
 
 model InviteToken {
-  id         String @id
-  name       String
-  token      String
-  expires_at BigInt
+  id           String @id
+  name         String
+  phone_number String
+  token        String
+  expires_at   BigInt
+  created_at   BigInt
 
   @@map("invite_tokens")
 }

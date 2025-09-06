@@ -3,6 +3,7 @@ import { Transaction } from "../../../domain/entities/transaction";
 import { TransactionStatus } from "../../../domain/enums/transaction-status";
 import { TransactionType } from "../../../domain/enums/transaction-type";
 import { createSendLeadToPartnerMessage } from "../../../domain/messages/send-lead";
+import { MAX_NEGATIVE_WALLET_BALANCE } from "../../../shared/constants/max-negative-wallet-balance";
 import type { IConfigRepository } from "../../contracts/repos/config";
 import type { ILeadRepository } from "../../contracts/repos/lead";
 import type { ILeadDispatchRepository } from "../../contracts/repos/lead-dispatch";
@@ -48,7 +49,7 @@ export class SendLeadToParnterUseCase {
     }
 
     const leadPrice = await this.configRepo.getLeadPrice()
-    if (wallet.balance < leadPrice) {
+    if (wallet.balance < MAX_NEGATIVE_WALLET_BALANCE) {
       console.error("Insufficient wallet balance: ", wallet)
       return new Error("Insufficient wallet balance")
     }

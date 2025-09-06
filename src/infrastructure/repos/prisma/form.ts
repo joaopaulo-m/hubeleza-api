@@ -30,7 +30,11 @@ export class PrismaFormRepository implements IFormRepository {
       include: {
         treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -49,7 +53,11 @@ export class PrismaFormRepository implements IFormRepository {
       include: {
         treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       }
@@ -80,7 +88,11 @@ export class PrismaFormRepository implements IFormRepository {
       include: {
         treatments: {
           include: {
-            treatment: true
+            treatment: {
+              include: {
+                state_prices: true
+              }
+            }
           }
         }
       },

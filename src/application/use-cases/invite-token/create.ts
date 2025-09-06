@@ -4,6 +4,7 @@ import { InviteTokenMapper } from "../../mappers/invite-token";
 
 export interface CreateInviteTokenDto {
   name: string
+  phone_number: string
 }
 
 export class CreateInviteTokenUseCase {
@@ -13,7 +14,8 @@ export class CreateInviteTokenUseCase {
 
   async execute(props: CreateInviteTokenDto): Promise<Error | CreateInviteTokenDto> {
     const token = new InviteToken({
-      name: props.name
+      name: props.name,
+      phone_number: props.phone_number,
     })
 
     await this.inviteTokenRepo.create(token)

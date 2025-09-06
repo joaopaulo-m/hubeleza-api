@@ -54,10 +54,6 @@ export class Wallet {
       return new Error("Negative amount")
     }
 
-    if (this.props.balance < amount) {
-      return new Error("Insufficient amount in balance")
-    }
-
     this.props.balance -= amount
   }
 

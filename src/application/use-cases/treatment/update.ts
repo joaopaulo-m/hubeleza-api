@@ -1,9 +1,11 @@
+import type { TreatmentCategory } from "../../../domain/enums/treatment-category";
 import type { ITreatmentRepository } from "../../contracts/repos/treatment";
 
 export interface UpdateTreatmentDto {
   id: string
   name?: string
   price?: number
+  category?: TreatmentCategory
 }
 
 export class UpdateTreatmentUseCase {
@@ -30,6 +32,10 @@ export class UpdateTreatmentUseCase {
 
     if (props.price) {
       treatmentExists.updatePrice(props.price)
+    }
+
+    if (props.category) {
+      treatmentExists.updateCategory(props.category)
     }
 
     await this.treatmentRepo.update(treatmentExists)

@@ -15,7 +15,6 @@ export class DistributeLeadUseCase {
   constructor(
     private readonly formRepo: IFormRepository,
     private readonly partnerRepo: IPartnerRepository,
-    private readonly configRepo: IConfigRepository,
     private readonly queueService: IQueueService,
     private readonly createLeadUseCase: CreateLeadUseCase,
   ) {}
@@ -39,11 +38,9 @@ export class DistributeLeadUseCase {
     }
 
     const lead = createLeadResult;
-    const leadPrice = await this.configRepo.getLeadPrice()
     const leadPartners = await this.partnerRepo.findNearestPartners({
       lat: lead.lat,
       lng: lead.lng,
-      lead_price: leadPrice,
       limit: 5
     })
 

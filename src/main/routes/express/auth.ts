@@ -16,7 +16,7 @@ const router = Router()
 //   res.status(statusCode).json(response);
 // })
 
-router.post("/auth/define-password", verifyToken([AccountType.PARTNER, AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.post("/auth/define-password", verifyToken([AccountType.OPERATOR, AccountType.PARTNER, AccountType.ADMIN]), async (req: Request, res: Response) => {
   const controller = makeDefinePasswordController();
   const { password } = req.body
   const { account_id } = req.account

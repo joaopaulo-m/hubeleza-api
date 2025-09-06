@@ -14,6 +14,7 @@ export type TransactionProps = {
   external_id?: string
   lead_price?: number
   lead?: Lead
+  bonus_amount?: number
 }
 
 export class Transaction {
@@ -53,6 +54,10 @@ export class Transaction {
 
   get lead() {
     return this.props.lead
+  }
+
+  get bonus_amount() {
+    return this.props.bonus_amount
   }
 
   constructor(props: Omit<TransactionProps, "id" | "created_at"> & { id?: string, created_at?: number }) {
