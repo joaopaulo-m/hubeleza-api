@@ -52,10 +52,6 @@ export class SignPartnerUpUseCase {
       return new Error("Token not found")
     }
 
-    if (inviteToken.expires_at < Date.now()) {
-      return new Error("Invite token expired")
-    }
-
     const partnerAlreadyExists = await this.partnerRepo.findByCpf(props.cpf)
     
     if (partnerAlreadyExists) {

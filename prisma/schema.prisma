@@ -207,7 +207,6 @@ model InviteToken {
   name         String
   phone_number String
   token        String
-  expires_at   BigInt
   created_at   BigInt
 
   @@map("invite_tokens")
