@@ -48,7 +48,7 @@ export class PrismaInviteTokenRepository implements IInviteTokenRepository {
         }
       },
       orderBy: {
-        expires_at: "desc"
+        created_at: "desc"
       }
     })
 

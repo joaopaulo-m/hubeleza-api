@@ -20,7 +20,7 @@ router.post("/transactions/confirm-webhook", async (req: Request, res: Response)
   res.status(statusCode).json(response);
 })
 
-router.get("/transactions/:transaction_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR, AccountType.PARTNER]), async (req: Request, res: Response) => {
+router.get("/transactions/:transaction_id", async (req: Request, res: Response) => {
   const controller = makeGetTransactionByIdController();
   const { transaction_id } = req.params;
 

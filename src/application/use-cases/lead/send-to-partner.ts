@@ -1,9 +1,11 @@
 import { LeadDispatch } from "../../../domain/entities/lead-dispatch";
 import { Transaction } from "../../../domain/entities/transaction";
+import { PartnerStatus } from "../../../domain/enums/partner-status";
 import { TransactionStatus } from "../../../domain/enums/transaction-status";
 import { TransactionType } from "../../../domain/enums/transaction-type";
 import { createSendLeadToPartnerMessage } from "../../../domain/messages/send-lead";
 import { MAX_NEGATIVE_WALLET_BALANCE } from "../../../shared/constants/max-negative-wallet-balance";
+import { WALLET_RECHARGE_THRESHOLD } from "../../../shared/constants/wallet-recharge-threshold";
 import type { IConfigRepository } from "../../contracts/repos/config";
 import type { ILeadRepository } from "../../contracts/repos/lead";
 import type { ILeadDispatchRepository } from "../../contracts/repos/lead-dispatch";
@@ -40,6 +42,13 @@ export class SendLeadToParnterUseCase {
     const partner = await this.partnerRepo.findById(props.partner_id);
     if (!partner) {
       return new Error("Partner not found");
+    }
+    if (
+      partner.status !== PartnerStatus.ACTIVE &&
+      partner.status !== PartnerStatus.RECHARGE_REQUIRED
+    ) {
+      console.error("Invalid partner: ", partner.id)
+      return new Error("Invalid partner")
     }
 
     const wallet = await this.walletRepo.findByPartnerId(partner.id)
@@ -97,7 +106,11 @@ export class SendLeadToParnterUseCase {
       }),
       message_sent: message
     })
-    
+
+    if (wallet.balance < WALLET_RECHARGE_THRESHOLD && partner.status !== PartnerStatus.RECHARGE_REQUIRED) {
+      partner.updateStatus(PartnerStatus.RECHARGE_REQUIRED)
+      await this.partnerRepo.update(partner)
+    }
     await this.walletRepo.update(wallet);
     await this.transactionRepo.create(transaction);
     await this.leadDispatchRepo.create(leadDispatch);

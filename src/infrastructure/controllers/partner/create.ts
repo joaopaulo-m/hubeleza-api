@@ -18,7 +18,7 @@ export class CreatePartnerController {
     }
 
     return {
-      statusCode: 201,
+      statusCode: 200,
       response: {}
     }
   }

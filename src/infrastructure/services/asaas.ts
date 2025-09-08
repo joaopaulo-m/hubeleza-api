@@ -11,7 +11,7 @@ export class AsaasPaymentService implements IPaymentService {
 
   async createWallet(props: CreateWalletProps): Promise<Error | CreateWalletReturn> {
     try {
-      const response = await axios.post("https://api-sandbox.asaas.com/v3/customers", {
+      const response = await axios.post("https://api.asaas.com/v3/customers", {
         name: props.name,
         cpfCnpj: props.document,
         mobilePhone: props.phone_number,
@@ -39,7 +39,7 @@ export class AsaasPaymentService implements IPaymentService {
 
       const formatted = tomorrow.toISOString().split('T')[0];
 
-      const createResult = await axios.post("https://api-sandbox.asaas.com/v3/payments", {
+      const createResult = await axios.post("https://api.asaas.com/v3/payments", {
         billingType: "PIX",
         customer: props.wallet_id,
         value: Number((props.amount / 100).toFixed(2)),
@@ -54,7 +54,7 @@ export class AsaasPaymentService implements IPaymentService {
 
       const transaction_id = createResult.data.id
 
-      const getPixDataResult = await axios.get(`https://api-sandbox.asaas.com/v3/payments/${transaction_id}/pixQrCode`,
+      const getPixDataResult = await axios.get(`https://api.asaas.com/v3/payments/${transaction_id}/pixQrCode`,
         {
           headers: {
             'Content-Type': "application/json",
@@ -76,7 +76,7 @@ export class AsaasPaymentService implements IPaymentService {
 
   async getTotalBalance(): Promise<number> {
     try {
-      const response = await axios.get("https://api-sandbox.asaas.com/v3/finance/balance", {
+      const response = await axios.get("https://api.asaas.com/v3/finance/balance", {
         headers: {
           'Content-Type': "application/json",
           'User-Agent': "hubeleza-api",

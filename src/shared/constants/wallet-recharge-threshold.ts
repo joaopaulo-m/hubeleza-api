@@ -1,0 +1,1 @@
+export const WALLET_RECHARGE_THRESHOLD = 7500

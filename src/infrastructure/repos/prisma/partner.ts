@@ -146,6 +146,9 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
   
+    const config = await prisma.config.findFirst();
+    const LEAD_PRICE = config?.lead_price || 0
+
     const rawPartners = await prisma.$queryRawUnsafe<any[]>(`
       SELECT p.*,
         (
@@ -157,10 +160,10 @@ export class PrismaPartnerRepository implements IPartnerRepository {
         ) AS distance
       FROM partners p
       JOIN wallets w ON w.partner_id = p.id
-      WHERE w.balance > $3
+      WHERE (w.balance - $3) >= $4 AND (p.status = 'ACTIVE' OR p.status = 'RECHARGE_REQUIRED')
       ORDER BY distance
-      LIMIT $4
-    `, parsedLat, parsedLng, MAX_NEGATIVE_WALLET_BALANCE, limit);
+      LIMIT $5
+    `, parsedLat, parsedLng, LEAD_PRICE, MAX_NEGATIVE_WALLET_BALANCE, limit);
   
     const partnerIds = rawPartners.map(p => p.id);
   

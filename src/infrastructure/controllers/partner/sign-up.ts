@@ -18,8 +18,8 @@ export class SignPartnerUpController {
     }
 
     return {
-      statusCode: 201,
-      response: {}
+      statusCode: 200,
+      response: result
     }
   }
 }
