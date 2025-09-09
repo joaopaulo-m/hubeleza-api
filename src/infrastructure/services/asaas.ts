@@ -6,6 +6,7 @@ export class AsaasPaymentService implements IPaymentService {
   private readonly accessToken: string
   
   constructor(accessToken: string) {
+    console.log("asaas access token: ", accessToken)
     this.accessToken = accessToken
   }
 
