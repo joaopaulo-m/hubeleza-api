@@ -19,7 +19,7 @@ export class AsaasPaymentService implements IPaymentService {
         headers: {
           'Content-Type': "application/json",
           'User-Agent': "hubeleza-api",
-          access_token: this.accessToken
+          'access_token': this.accessToken
         }
       })
 
@@ -48,7 +48,7 @@ export class AsaasPaymentService implements IPaymentService {
         headers: {
           'Content-Type': "application/json",
           'User-Agent': "hubeleza-api",
-          access_token: this.accessToken
+          'access_token': this.accessToken
         }
       })
 
@@ -59,7 +59,7 @@ export class AsaasPaymentService implements IPaymentService {
           headers: {
             'Content-Type': "application/json",
             'User-Agent': "hubeleza-api",
-            access_token: this.accessToken
+            'access_token': this.accessToken
           }
         }
       )
@@ -80,7 +80,7 @@ export class AsaasPaymentService implements IPaymentService {
         headers: {
           'Content-Type': "application/json",
           'User-Agent': "hubeleza-api",
-          access_token: this.accessToken
+          'access_token': this.accessToken
         }
       })
 
