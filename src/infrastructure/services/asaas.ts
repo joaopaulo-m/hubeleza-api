@@ -3,16 +3,17 @@ import axios from 'axios'
 import type { CreateWalletProps, CreateWalletReturn, GeneratePixPaymentProps, GeneratePixPaymentReturn, IPaymentService } from "../../application/contracts/services/payment";
 
 export class AsaasPaymentService implements IPaymentService {
+  private readonly baseUrl: string
   private readonly accessToken: string
   
-  constructor(accessToken: string) {
-    console.log("asaas access token: ", accessToken)
+  constructor(baseUrl: string, accessToken: string) {
+    this.baseUrl = baseUrl
     this.accessToken = accessToken
   }
 
   async createWallet(props: CreateWalletProps): Promise<Error | CreateWalletReturn> {
     try {
-      const response = await axios.post("https://api.asaas.com/v3/customers", {
+      const response = await axios.post(`${this.baseUrl}/customers`, {
         name: props.name,
         cpfCnpj: props.document,
         mobilePhone: props.phone_number,
@@ -40,7 +41,7 @@ export class AsaasPaymentService implements IPaymentService {
 
       const formatted = tomorrow.toISOString().split('T')[0];
 
-      const createResult = await axios.post("https://api.asaas.com/v3/payments", {
+      const createResult = await axios.post(`${this.baseUrl}/payments`, {
         billingType: "PIX",
         customer: props.wallet_id,
         value: Number((props.amount / 100).toFixed(2)),
@@ -55,7 +56,7 @@ export class AsaasPaymentService implements IPaymentService {
 
       const transaction_id = createResult.data.id
 
-      const getPixDataResult = await axios.get(`https://api.asaas.com/v3/payments/${transaction_id}/pixQrCode`,
+      const getPixDataResult = await axios.get(`${this.baseUrl}/payments/${transaction_id}/pixQrCode`,
         {
           headers: {
             'Content-Type': "application/json",
@@ -77,7 +78,7 @@ export class AsaasPaymentService implements IPaymentService {
 
   async getTotalBalance(): Promise<number> {
     try {
-      const response = await axios.get("https://api.asaas.com/v3/finance/balance", {
+      const response = await axios.get(`${this.baseUrl}/finance/balance`, {
         headers: {
           'Content-Type': "application/json",
           'User-Agent': "hubeleza-api",

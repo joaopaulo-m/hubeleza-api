@@ -60,4 +60,12 @@ router.get("/operators/me", verifyToken([AccountType.OPERATOR]), async (req: Req
   res.status(statusCode).json(response);
 })
 
+router.get("/operators/:operator_id/id", async (req: Request, res: Response) => {
+  const controller = makeGetOperatorByIdController();
+  const { operator_id } = req.params
+
+  const { statusCode, response } = await controller.handle(operator_id)
+  res.status(statusCode).json(response);
+})
+
 export default router;

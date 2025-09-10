@@ -8,6 +8,7 @@ export const makeCreateWalletPaymentController = () => {
   const walletRepo = new PrismaWalletRepository()
   const transactionRepo = new PrismaTransactionRepository()
   const paymentService = new AsaasPaymentService(
+    process.env.ASAAS_BASE_URL || "",
     process.env.ASAAS_ACCESS_TOKEN || ""
   )
   const useCase = new CreateWalletPaymentUseCase(

@@ -17,6 +17,7 @@ export const makeSignPartnerUpController = () => {
   const transactionRepo = new PrismaTransactionRepository()
   const geolocationService = new OpenCageGeolocationService()
   const paymentService = new AsaasPaymentService(
+    process.env.ASAAS_BASE_URL || "",
     process.env.ASAAS_ACCESS_TOKEN || ""
   )
   const createWalletPaymentUseCase = new CreateWalletPaymentUseCase(

@@ -13,7 +13,10 @@ export const makeGetAdminDashboardDataController = () => {
   const leadRepo = new PrismaLeadRepository()
   const treatmentRepo = new PrismaTreatmentRepository()
   const transactionRepo = new PrismaTransactionRepository()
-  const paymentService = new AsaasPaymentService(process.env.ASAAS_ACCESS_TOKEN || "")
+  const paymentService = new AsaasPaymentService(
+    process.env.ASAAS_BASE_URL || "",
+    process.env.ASAAS_ACCESS_TOKEN || ""
+  )
   const useCase = new GetAdminDashboardDataUseCase(walletRepo, partnerRepo, leadRepo, treatmentRepo, transactionRepo, paymentService)
   return new GetAdminDashboardDataController(useCase)
 }

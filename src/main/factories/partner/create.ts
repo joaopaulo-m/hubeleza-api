@@ -12,6 +12,7 @@ export const makeCreatePartnerController = () => {
   const walletRepo = new PrismaWalletRepository()
   const geolocationService = new OpenCageGeolocationService()
   const paymentService = new AsaasPaymentService(
+    process.env.ASAAS_BASE_URL || "",
     process.env.ASAAS_ACCESS_TOKEN || ""
   )
   const useCase = new CreatePartnerUseCase(

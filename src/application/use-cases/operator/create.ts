@@ -1,6 +1,8 @@
 import { Operator } from "../../../domain/entities/operator";
+import { INVITE_COLABORATOR_EMAIL_HTML } from "../../../shared/emails/invite-colaborator";
 import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IOperatorRepository } from "../../contracts/repos/operator";
+import type { IEmailService } from "../../contracts/services/email";
 
 export interface CreateOperatorDto {
   admin_id: string
@@ -12,6 +14,7 @@ export class CreateOperatorUseCase {
   constructor(
     private readonly adminRepo: IAdminRepository,
     private readonly operatorRepo: IOperatorRepository,
+    private readonly emailService: IEmailService
   ){}
 
   async execute(props: CreateOperatorDto): Promise<Error | void> {
@@ -34,6 +37,19 @@ export class CreateOperatorUseCase {
       password: "not-defined",
     })
     await this.operatorRepo.create(operator)
+
+    const sendEmailResult = await this.emailService.sendEmail({
+      subject: "Você foi convidado para Hubeleza!",
+      email: operator.email,
+      content: INVITE_COLABORATOR_EMAIL_HTML({
+        operator_name: operator.name,
+        operator_id: operator.id
+      })
+    })
+
+    if (sendEmailResult instanceof Error) {
+      console.error("Error sending email: ", sendEmailResult)
+    }
 
     return void 0
   }
