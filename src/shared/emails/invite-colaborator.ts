@@ -224,6 +224,7 @@ export const INVITE_COLABORATOR_EMAIL_HTML = (props: InviteColaboratorEmailHtmlP
             .cta-button {
                 padding: 14px 30px;
                 font-size: 15px;
+                color: #FFFFFF;
             }
             
             .step {
