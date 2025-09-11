@@ -39,7 +39,8 @@ export class OperatorMapper {
       name: domain.name,
       email: domain.email,
       created_by: domain.created_by,
-      created_at: domain.created_at
+      created_at: domain.created_at,
+      password_not_defined: domain.password === "not-defined" ? true : undefined
     }
   }
 }

@@ -4,4 +4,5 @@ export interface OperatorDto {
   email: string
   created_at: number
   created_by: string
+  password_not_defined?: boolean
 }
