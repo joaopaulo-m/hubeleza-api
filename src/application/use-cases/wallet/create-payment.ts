@@ -5,6 +5,7 @@ import { FIRST_TRANSACTION_BONUS } from "../../../shared/constants/first-transac
 import type { ITransactionRepository } from "../../contracts/repos/transaction"
 import type { IWalletRepository } from "../../contracts/repos/wallet"
 import type { IPaymentService } from "../../contracts/services/payment"
+import type { IQueueService } from "../../contracts/services/queue"
 
 export interface CreateWalletPaymentDto {
   wallet_id: string
@@ -21,7 +22,8 @@ export class CreateWalletPaymentUseCase {
   constructor(
     private readonly walletRepo: IWalletRepository,
     private readonly transactionRepo: ITransactionRepository,
-    private readonly paymentService: IPaymentService
+    private readonly paymentService: IPaymentService,
+    private readonly queueService: IQueueService
   ){}
 
   async execute(props: CreateWalletPaymentDto): Promise<Error | CreateWalletPaymentReturn> {
@@ -69,6 +71,19 @@ export class CreateWalletPaymentUseCase {
       bonus_amount: wallet.transactions.length === 0 ? FIRST_TRANSACTION_BONUS : undefined
     })
     await this.transactionRepo.create(transaction)
+
+    if (wallet.transactions.length === 0) {
+      const VERIFY_ACCOUNT_CONFIRMATION_DELAY = 30 * 60 * 1000 // 30 minutos
+
+      await this.queueService.add({
+        name: "verify_account_confirmation",
+        data: {
+          transaction_id: transaction.id,
+          partner_id: wallet.partner_id
+        },
+        delay: VERIFY_ACCOUNT_CONFIRMATION_DELAY
+      })
+    }
 
     return {
       transaction_id: transaction.id,
