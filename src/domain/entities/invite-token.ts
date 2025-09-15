@@ -6,6 +6,8 @@ export type InviteTokenProps = {
   phone_number: string
   token: string
   created_at: number
+  operator_id?: string
+  transaction_id?: string
 }
 
 export class InviteToken {
@@ -29,6 +31,14 @@ export class InviteToken {
 
   get created_at() {
     return this.props.created_at
+  }
+
+  get operator_id() {
+    return this.props.operator_id
+  }
+
+  get transaction_id() {
+    return this.props.transaction_id
   }
 
   constructor(

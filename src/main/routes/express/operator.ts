@@ -14,12 +14,14 @@ const router = Router()
 router.post("/operators", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
   const controller = makeCreateOperatorController();
   const { account_id } = req.account
-  const { name, email } = req.body
+  const { name, email, sign_up_comission_percentage, topup_comission_percentage } = req.body
 
   const { statusCode, response } = await controller.handle({ 
     admin_id: account_id,
     name,
-    email
+    email,
+    sign_up_comission_percentage,
+    topup_comission_percentage
   })
   res.status(statusCode).json(response);
 })
@@ -27,12 +29,14 @@ router.post("/operators", verifyToken([AccountType.ADMIN]), async (req: Request,
 router.patch("/operators/:operator_id", verifyToken([AccountType.ADMIN]), async (req: Request, res: Response) => {
   const controller = makeUpdateOperatorController();
   const { operator_id } = req.params
-  const { name, email } = req.body
+  const { name, email, sign_up_comission_percentage, topup_comission_percentage } = req.body
 
   const { statusCode, response } = await controller.handle({ 
     operator_id,
     name,
-    email
+    email,
+    sign_up_comission_percentage,
+    topup_comission_percentage
   })
   res.status(statusCode).json(response);
 })

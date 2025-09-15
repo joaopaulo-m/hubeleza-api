@@ -1,10 +1,12 @@
 import { InviteToken } from "../../../domain/entities/invite-token";
 import type { IInviteTokenRepository } from "../../contracts/repos/invite-token";
+import type { InviteTokenDto } from "../../dtos/invite-token";
 import { InviteTokenMapper } from "../../mappers/invite-token";
 
 export interface CreateInviteTokenDto {
   name: string
   phone_number: string
+  operator_id?: string
 }
 
 export class CreateInviteTokenUseCase {
@@ -12,10 +14,11 @@ export class CreateInviteTokenUseCase {
     private readonly inviteTokenRepo: IInviteTokenRepository
   ){}
 
-  async execute(props: CreateInviteTokenDto): Promise<Error | CreateInviteTokenDto> {
+  async execute(props: CreateInviteTokenDto): Promise<Error | InviteTokenDto> {
     const token = new InviteToken({
       name: props.name,
       phone_number: props.phone_number,
+      operator_id: props.operator_id
     })
 
     await this.inviteTokenRepo.create(token)

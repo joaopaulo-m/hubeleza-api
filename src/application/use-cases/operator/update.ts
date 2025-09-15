@@ -4,6 +4,8 @@ export interface UpdateOperatorDto {
   operator_id: string
   name?: string
   email?: string
+  sign_up_comission_percentage?: number
+  topup_comission_percentage?: number
 }
 
 export class UpdateOperatorUseCase {
@@ -28,6 +30,14 @@ export class UpdateOperatorUseCase {
 
     if (props.email) {
       operator.updateEmail(props.email)
+    }
+
+    if (props.sign_up_comission_percentage) {
+      operator.updateSignUpComissionPercentage(props.sign_up_comission_percentage)
+    }
+
+    if (props.topup_comission_percentage) {
+      operator.updateTopupComissionPercentage(props.topup_comission_percentage)
     }
 
     await this.operatorRepo.update(operator)

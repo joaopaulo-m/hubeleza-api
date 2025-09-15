@@ -53,7 +53,8 @@ export class ConfirmWalletPaymentUseCase {
 
     if (wallet.transactions.length === 1) {
       const confirmPartnerAccountResult = await this.confirmPartnerAccountUseCase.execute({
-        partner_id: wallet.partner_id
+        partner_id: wallet.partner_id,
+        transaction_id: transaction.id
       })
 
       if (confirmPartnerAccountResult instanceof Error) {

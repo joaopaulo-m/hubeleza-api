@@ -12,6 +12,7 @@ import type { State } from '../../../domain/enums/state';
 import type { CreateWalletPaymentUseCase } from '../wallet/create-payment';
 import { PARTNER_INITAL_PAYMENT_AMOUNT } from '../../../shared/constants/inital-partner-payment-amount';
 import type { AxiosError } from 'axios';
+import type { IOperatorRepository } from '../../contracts/repos/operator';
 
 export interface SignPartnerUpDto {
   invite_token: string
@@ -40,6 +41,7 @@ export class SignPartnerUpUseCase {
     private readonly inviteTokenRepo: IInviteTokenRepository,
     private readonly treatmentRepo: ITreatmentRepository,
     private readonly walletRepo: IWalletRepository,
+    private readonly operatorRepo: IOperatorRepository,
     private readonly geolocationService: IGeolocationService,
     private readonly paymentService: IPaymentService,
     private readonly createWalletPaymentUseCase: CreateWalletPaymentUseCase
@@ -115,7 +117,6 @@ export class SignPartnerUpUseCase {
 
     await this.partnerRepo.create(partner)
     await this.walletRepo.create(partnerWallet)
-    await this.inviteTokenRepo.delete(inviteToken.id)
 
     const createInitialPaymentResult = await this.createWalletPaymentUseCase.execute({
       wallet_id: partnerWallet.id,
@@ -124,6 +125,22 @@ export class SignPartnerUpUseCase {
 
     if (createInitialPaymentResult instanceof Error) {
       return new Error("Error creating partner initial payment: ", createInitialPaymentResult)
+    }
+
+    if (inviteToken.operator_id) {
+      const operator = await this.operatorRepo.findById(inviteToken.operator_id)
+
+      if (operator && operator.sign_up_comission_percentage) {
+        const addTransactionToOperatorInviteResult = await this.inviteTokenRepo.addTransaction(createInitialPaymentResult.transaction_id)
+
+        if (!addTransactionToOperatorInviteResult) {
+          console.error("Error add transaction to invite token: ", addTransactionToOperatorInviteResult)
+        }
+      } else {
+        await this.inviteTokenRepo.delete(inviteToken.id)
+      }
+    } else {
+      await this.inviteTokenRepo.delete(inviteToken.id)
     }
 
     return createInitialPaymentResult;

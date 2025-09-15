@@ -74,14 +74,47 @@ model Admin {
 }
 
 model Operator {
-  id         String @id
-  name       String
-  email      String
-  password   String
-  created_at BigInt
-  created_by String
+  id                           String   @id
+  name                         String
+  email                        String
+  password                     String
+  created_at                   BigInt
+  created_by                   String
+  sign_up_comission_percentage Decimal?
+  topup_comission_percentage   Decimal?
+
+  wallet        OperatorWallet?
+  invite_tokens InviteToken[]
 
   @@map("operators")
+}
+
+model OperatorWallet {
+  id          String  @id
+  operator_id String  @unique
+  document    String
+  balance     Int
+  external_id String?
+
+  operator     Operator              @relation(fields: [operator_id], references: [id], onDelete: Cascade)
+  transactions OperatorTransaction[]
+
+  @@map("operator_wallets")
+}
+
+model OperatorTransaction {
+  id                   String   @id
+  operator_wallet_id   String   @unique
+  type                 String
+  amount               Int
+  created_at           BigInt
+  external_id          String?
+  comission_percentage Decimal?
+
+  operator_wallet OperatorWallet @relation(fields: [operator_wallet_id], references: [id], onDelete: Cascade)
+  invite_tokens   InviteToken[]
+
+  @@map("operator_transactions")
 }
 
 model Partner {
@@ -203,11 +236,16 @@ model LeadDispatchTreatment {
 }
 
 model InviteToken {
-  id           String @id
-  name         String
-  phone_number String
-  token        String
-  created_at   BigInt
+  id             String  @id
+  name           String
+  phone_number   String
+  token          String
+  created_at     BigInt
+  operator_id    String?
+  transaction_id String?
+
+  operator    Operator?            @relation(fields: [operator_id], references: [id], onDelete: Cascade)
+  transaction OperatorTransaction? @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
 
   @@map("invite_tokens")
 }

@@ -8,6 +8,8 @@ export interface CreateOperatorDto {
   admin_id: string
   name: string
   email: string
+  sign_up_comission_percentage?: number
+  topup_comission_percentage?: number
 }
 
 export class CreateOperatorUseCase {
@@ -35,6 +37,8 @@ export class CreateOperatorUseCase {
       email: props.email,
       created_by: admin.name,
       password: "not-defined",
+      sign_up_comission_percentage: props.sign_up_comission_percentage,
+      topup_comission_percentage: props.topup_comission_percentage
     })
     await this.operatorRepo.create(operator)
 
