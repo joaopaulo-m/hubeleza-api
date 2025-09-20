@@ -8,5 +8,5 @@ export interface IInviteTokenRepository {
   getAll: (props?: FetchInviteTokensDto) => Promise<InviteToken[]>
   create: (inviteToken: InviteToken) => Promise<void>
   delete: (id: string) => Promise<void>
-  addTransaction: (transaction_id: string) => Promise<Error | void>
+  addTransaction: (invite_token_id: string, transaction_id: string) => Promise<Error | void>
 }

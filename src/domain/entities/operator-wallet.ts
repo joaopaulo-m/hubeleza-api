@@ -54,6 +54,10 @@ export class OperatorWallet {
       return new Error("Negative amount")
     }
 
+    if (amount > this.props.balance) {
+      return new Error("Not sufficient amount in balance")
+    }
+
     this.props.balance -= amount
   }
 

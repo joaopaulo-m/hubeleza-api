@@ -15,6 +15,7 @@ import inviteTokenRoutes from './routes/express/invite-token'
 import walletRoutes from './routes/express/wallet'
 import transactionRoutes from './routes/express/transaction'
 import operatorRoutes from './routes/express/operator'
+import operatorWalletRoutes from './routes/express/operator-wallet'
 
 const app = express();
 
@@ -35,5 +36,6 @@ app.use(inviteTokenRoutes)
 app.use(walletRoutes)
 app.use(transactionRoutes)
 app.use(operatorRoutes)
+app.use(operatorWalletRoutes)
 
 export { app }

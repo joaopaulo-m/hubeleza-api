@@ -93,7 +93,8 @@ export class SignPartnerUpUseCase {
       state: props.state as State,
       lat,
       lng,
-      treatments: treatments.filter(treatment => props.treatment_ids.includes(treatment.id))
+      treatments: treatments.filter(treatment => props.treatment_ids.includes(treatment.id)),
+      operator_id: inviteToken.operator_id
     })
 
     const createWalletResult = await this.paymentService.createWallet({
@@ -129,10 +130,10 @@ export class SignPartnerUpUseCase {
 
     if (inviteToken.operator_id) {
       const operator = await this.operatorRepo.findById(inviteToken.operator_id)
-
+      
       if (operator && operator.sign_up_comission_percentage) {
-        const addTransactionToOperatorInviteResult = await this.inviteTokenRepo.addTransaction(createInitialPaymentResult.transaction_id)
-
+        const addTransactionToOperatorInviteResult = await this.inviteTokenRepo.addTransaction(inviteToken.id, createInitialPaymentResult.transaction_id)
+        
         if (!addTransactionToOperatorInviteResult) {
           console.error("Error add transaction to invite token: ", addTransactionToOperatorInviteResult)
         }

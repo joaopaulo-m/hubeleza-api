@@ -10,6 +10,7 @@ import type { ITransactionRepository } from "../../contracts/repos/transaction"
 export interface AddOperatorComissionDto {
   operator_id: string
   transaction_id: string
+  partner_id: string
   comission_type: ComissionType
 }
 
@@ -76,10 +77,14 @@ export class AddOperatorComissionUseCase {
       type: TransactionType.INCOME,
       amount: comissionAmount,
       comission_percentage: operator.sign_up_comission_percentage,
+      comission_type: props.comission_type,
+      partner_id: props.partner_id
     })
 
     await this.operatorWalletRepo.update(operatorWallet)
     await this.operatorTransactionRepo.create(comissionTransaction)
+
+    return void 0;
   }
 
   private getComissionAmount(props: GetComissionAmountProps) {

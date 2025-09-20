@@ -4,7 +4,7 @@ import { Admin } from "../../../domain/entities/admin";
 import { Partner } from "../../../domain/entities/partner";
 import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
-import type { Operator } from '../../../domain/entities/operator';
+import { Operator } from '../../../domain/entities/operator';
 import type { IOperatorRepository } from '../../contracts/repos/operator';
 
 export interface DefinePasswordDto {
@@ -39,6 +39,10 @@ export class DefinePasswordUseCase {
 
     if (account instanceof Admin) {
       await this.adminRepo.update(account)
+    }
+
+    if (account instanceof Operator) {
+      await this.operatorRepo.update(account)
     }
 
     return void 0;

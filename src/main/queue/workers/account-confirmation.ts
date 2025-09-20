@@ -4,7 +4,7 @@ import { redisConnection } from '../../../infrastructure/services/queue/redis-co
 import { makeVerifyPartnerConfirmationUseCase } from '../../factories/partner/verify-confirmation';
 
 export const accountConfirmationWorker = new Worker(
-  'account_confirmation',
+  'account-confirmation',
   async (job) => {
     if (job.name === "verify_account_confirmation") {
       console.log("Processing account confirmation job: ", job.id);

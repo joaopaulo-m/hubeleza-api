@@ -33,9 +33,24 @@ export class PrismaInviteTokenRepository implements IInviteTokenRepository {
     return null
   }
 
+  async findByTransactionId(transaction_id: string) {
+    const inviteToken = await prisma.inviteToken.findFirst({
+      where: {
+        transaction_id
+      }
+    })
+
+    if (inviteToken) {
+      return InviteTokenMapper.toDomain(inviteToken)
+    }
+
+    return null
+  }
+
   async getAll(props?: FetchInviteTokensDto) {
     const tokens = await prisma.inviteToken.findMany({
       where: {
+        operator_id: props?.operator_id,
         name: props?.name
           ? {
               contains: props.name,
@@ -63,6 +78,21 @@ export class PrismaInviteTokenRepository implements IInviteTokenRepository {
     await prisma.inviteToken.create({
       data
     })
+  }
+  
+  async addTransaction(invite_token_id: string, transaction_id: string) {
+    try {
+      await prisma.inviteToken.update({
+        where: {
+          id: invite_token_id
+        },
+        data: {
+          transaction_id
+        }
+      })
+    } catch (error) {
+      return error as Error
+    }
   }
 
   async delete(id: string) {

@@ -17,5 +17,6 @@ export interface PartnerDto {
   lat: string
   lng: string
   treatments: TreatmentDto[]
+  operator_id?: string
   password_not_defined?: boolean
 }

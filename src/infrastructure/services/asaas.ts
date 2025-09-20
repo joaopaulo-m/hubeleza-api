@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios, { type AxiosError } from 'axios'
 
-import type { CreateWalletProps, CreateWalletReturn, GeneratePixPaymentProps, GeneratePixPaymentReturn, IPaymentService } from "../../application/contracts/services/payment";
+import type { CreateWalletProps, CreateWalletReturn, GeneratePixPaymentProps, GeneratePixPaymentReturn, IPaymentService, SendPixPaymentProps } from "../../application/contracts/services/payment";
 
 export class AsaasPaymentService implements IPaymentService {
   private readonly baseUrl: string
@@ -72,6 +72,26 @@ export class AsaasPaymentService implements IPaymentService {
         pix_copy_paste_code: getPixDataResult.data.payload,
       }
     } catch (error) {
+      return error as Error
+    }
+  }
+
+  async sendPixPayment(props: SendPixPaymentProps) {
+    try {
+      await axios.post(`${this.baseUrl}/transfers`, {
+        operationType: "PIX",
+        pixAddressKey: props.pix_address_key,
+        pixAddressKeyType: props.pix_address_key_type,
+        value: Number((props.amount / 100).toFixed(2))
+      }, {
+        headers: {
+          'Content-Type': "application/json",
+          'User-Agent': "hubeleza-api",
+          'access_token': this.accessToken
+        }
+      })
+    } catch (error) {
+      console.error("Error sending pix payment: ", (error as AxiosError).response?.data)
       return error as Error
     }
   }

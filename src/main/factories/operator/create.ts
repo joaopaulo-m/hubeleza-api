@@ -2,15 +2,18 @@ import { CreateOperatorUseCase } from "../../../application/use-cases/operator/c
 import { CreateOperatorController } from "../../../infrastructure/controllers/operator/create"
 import { PrismaAdminRepository } from "../../../infrastructure/repos/prisma/admin"
 import { PrismaOperatorRepository } from "../../../infrastructure/repos/prisma/operator"
+import { PrismaOperatorWalletRepository } from "../../../infrastructure/repos/prisma/operator-wallet"
 import { NodemailerService } from "../../../infrastructure/services/nodemailer"
 
 export const makeCreateOperatorController = () => {
   const adminRepo = new PrismaAdminRepository()
   const operatorRepo = new PrismaOperatorRepository()
+  const operatorWalletRepo = new PrismaOperatorWalletRepository()
   const emailService = new NodemailerService()
   const useCase = new CreateOperatorUseCase(
     adminRepo,
     operatorRepo,
+    operatorWalletRepo,
     emailService,
   )
   return new CreateOperatorController(useCase)

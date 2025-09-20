@@ -18,12 +18,6 @@ export class CreateTreatmentUseCase {
   ) {}
 
   async execute(props: CreateTreatmentDto): Promise<Error | void> {
-    const treatmentAlreadyExists = await this.treatmentRepo.findByName(props.name)
-
-    if (treatmentAlreadyExists) {
-      return new Error("Treatment already exists")
-    }
-
     if (
       props.category !== TreatmentCategory.BODY &&
       props.category !== TreatmentCategory.FACIAL &&

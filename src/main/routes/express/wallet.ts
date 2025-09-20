@@ -10,14 +10,16 @@ import { makeCreditWalletController } from "../../factories/wallet/credit";
 
 const router = Router()
 
-router.post("/wallets/:wallet_id/payments", verifyToken([AccountType.ADMIN, AccountType.PARTNER]), async (req: Request, res: Response) => {
+router.post("/wallets/:wallet_id/payments", verifyToken([AccountType.ADMIN, AccountType.OPERATOR, AccountType.PARTNER]), async (req: Request, res: Response) => {
   const controller = makeCreateWalletPaymentController();
   const { amount } = req.body;
   const { wallet_id } = req.params
+  const { account_type, account_id } = req.account
 
   const { statusCode, response } = await controller.handle({
     wallet_id,
-    amount
+    amount,
+    operator_id: account_type === AccountType.OPERATOR ? account_id : undefined
   })
   res.status(statusCode).json(response);
 })

@@ -1,4 +1,5 @@
 import { Operator } from "../../domain/entities/operator"
+import { Decimal } from "../../generated/prisma/runtime/library"
 import type { OperatorDto } from "../dtos/operator"
 
 export type PersistenceOperator = {
@@ -8,8 +9,8 @@ export type PersistenceOperator = {
   password: string
   created_at: bigint
   created_by: string
-  sign_up_comission_percentage: number | null
-  topup_comission_percentage: number | null
+  sign_up_comission_percentage: Decimal | null
+  topup_comission_percentage: Decimal | null
 }
 
 export class OperatorMapper {
@@ -21,8 +22,8 @@ export class OperatorMapper {
       password: raw.password,
       created_by: raw.created_by,
       created_at: Number(raw.created_at),
-      sign_up_comission_percentage: raw.sign_up_comission_percentage || undefined,
-      topup_comission_percentage: raw.topup_comission_percentage || undefined
+      sign_up_comission_percentage: raw.sign_up_comission_percentage ? raw.sign_up_comission_percentage.toNumber() : undefined,
+      topup_comission_percentage: raw.topup_comission_percentage ? raw.topup_comission_percentage.toNumber() : undefined
     })
   }
 
@@ -34,8 +35,8 @@ export class OperatorMapper {
       password: domain.password,
       created_by: domain.created_by,
       created_at: BigInt(domain.created_at),
-      sign_up_comission_percentage: domain.sign_up_comission_percentage || null,
-      topup_comission_percentage: domain.topup_comission_percentage || null
+      sign_up_comission_percentage: domain.sign_up_comission_percentage ? Decimal(domain.sign_up_comission_percentage) : null,
+      topup_comission_percentage: domain.topup_comission_percentage ? Decimal(domain.topup_comission_percentage) : null
     }
   }
 

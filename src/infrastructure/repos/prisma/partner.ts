@@ -24,6 +24,14 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     })
   }
 
+  async countByOperator(operator_id: string): Promise<number> {
+    return await prisma.partner.count({
+      where: {
+        operator_id
+      }
+    })
+  }
+
   async countActive(): Promise<number> {
     return await prisma.partner.count({
       where: {
@@ -268,7 +276,9 @@ export class PrismaPartnerRepository implements IPartnerRepository {
   async update(partner: Partner) {
     const data = {
       ...PartnerMapper.toPersistence(partner),
-      partners_treatments: undefined
+      id: undefined,
+      partners_treatments: undefined,
+      operator_id: undefined
     };
 
     await prisma.partner.update({

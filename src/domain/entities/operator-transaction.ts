@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 
 import { TransactionType } from "../enums/transaction-type"
+import type { ComissionType } from "../../shared/enums/comission-type"
 
 export type OperatorTransactionProps = {
   id: string
@@ -10,6 +11,8 @@ export type OperatorTransactionProps = {
   created_at: number
   external_id?: string
   comission_percentage?: number
+  comission_type?: ComissionType
+  partner_id?: string
 }
 
 export class OperatorTransaction {
@@ -41,6 +44,14 @@ export class OperatorTransaction {
 
   get comission_percentage() {
     return this.props.comission_percentage
+  }
+
+  get comission_type() {
+    return this.props.comission_type
+  }
+
+  get partner_id() {
+    return this.props.partner_id
   }
 
   constructor(props: Omit<OperatorTransactionProps, "id" | "created_at"> & { id?: string, created_at?: number }) {

@@ -10,4 +10,5 @@ export interface TransactionDto {
   lead_price?: number
   lead?: LeadDto
   bonus_amount?: number
+  operator_id?: string
 }

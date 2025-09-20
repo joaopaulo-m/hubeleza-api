@@ -8,6 +8,7 @@ import { makeConfirmWalletPaymentController } from "../../factories/wallet/confi
 import { makeGetTransactionByIdController } from "../../factories/transaction/get-by-id";
 import { makeGetPartnerTransactionsController } from "../../factories/transaction/get-by-partner";
 import { makeGetTransactionsController } from "../../factories/transaction/get-all";
+import { makeExportTransactionsController } from "../../factories/transaction/export";
 
 const router = Router()
 
@@ -34,7 +35,7 @@ router.get("/transactions", verifyToken([AccountType.ADMIN]), async (req: Reques
     max_amount,
     start_date,
     end_date
-   } = req.query;
+  } = req.query;
 
   const { statusCode, response } = await controller.handle({
     page: page ? Number(page) : undefined,
@@ -49,6 +50,39 @@ router.get("/transactions", verifyToken([AccountType.ADMIN]), async (req: Reques
     end_date: end_date ? Number(end_date) : undefined,
   })
   res.status(statusCode).json(response);
+})
+
+router.get("/transactions/export/csv", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
+  const controller = makeExportTransactionsController();
+  const {
+    page,
+    limit,
+    partner_name,
+    lead_name,
+    type,
+    status,
+    min_amount,
+    max_amount,
+    start_date,
+    end_date
+  } = req.query
+
+  const { response } = await controller.handle({
+    page: page ? Number(page) : undefined,
+    limit: limit ? Number(limit) : undefined,
+    partner_name: partner_name ? partner_name.toString() : undefined,
+    lead_name: lead_name ? lead_name.toString() : undefined,
+    type: type ? type.toString() : undefined,
+    status: status ? status.toString() : undefined,
+    min_amount: min_amount ? Number(min_amount) : undefined,
+    max_amount: max_amount ? Number(max_amount) : undefined,
+    start_date: start_date ? Number(start_date) : undefined,
+    end_date: end_date ? Number(end_date) : undefined,
+  })
+  
+  res.setHeader('Content-Type', 'text/csv')
+  res.setHeader('Content-Disposition', 'attachment; filename="transactions.csv"')
+  res.send(response)
 })
 
 router.get("/transactions/:transaction_id", async (req: Request, res: Response) => {

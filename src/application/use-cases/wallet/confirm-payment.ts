@@ -1,6 +1,8 @@
 import { TransactionStatus } from "../../../domain/enums/transaction-status";
+import { ComissionType } from "../../../shared/enums/comission-type";
 import type { ITransactionRepository } from "../../contracts/repos/transaction";
 import type { IWalletRepository } from "../../contracts/repos/wallet";
+import type { AddOperatorComissionUseCase } from "../operator/add-comission";
 import type { ConfirmPartnerAccountUseCase } from "../partner/confirm-account";
 
 export interface ConfirmWalletPaymentDto {
@@ -11,7 +13,8 @@ export class ConfirmWalletPaymentUseCase {
   constructor(
     private readonly transactionRepo: ITransactionRepository,
     private readonly walletRepo: IWalletRepository,
-    private readonly confirmPartnerAccountUseCase: ConfirmPartnerAccountUseCase
+    private readonly confirmPartnerAccountUseCase: ConfirmPartnerAccountUseCase,
+    private readonly addOperatorComissionUseCase: AddOperatorComissionUseCase
   ){}
 
   async execute(props: ConfirmWalletPaymentDto): Promise<Error | void> {
@@ -59,6 +62,19 @@ export class ConfirmWalletPaymentUseCase {
 
       if (confirmPartnerAccountResult instanceof Error) {
         console.error("Error confirming partner account: ", confirmPartnerAccountResult)
+      }
+    }
+
+    if (transaction.operator_id) {
+      const addOperatorComissionResult = await this.addOperatorComissionUseCase.execute({
+        operator_id: transaction.operator_id,
+        comission_type: ComissionType.TOPUP,
+        transaction_id: transaction.id,
+        partner_id: wallet.partner_id
+      })
+
+      if (addOperatorComissionResult instanceof Error) {
+        console.error("Error comissioning operator topup: ", addOperatorComissionResult, `op_id: ${transaction.operator_id} | tran_id: ${transaction.id}`)
       }
     }
 

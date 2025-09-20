@@ -1,5 +1,7 @@
 import { OperatorTransaction } from "../../domain/entities/operator-transaction"
 import type { TransactionType } from "../../domain/enums/transaction-type"
+import { Decimal } from "../../generated/prisma/runtime/library"
+import type { ComissionType } from "../../shared/enums/comission-type"
 import type { OperatorTransactionDto } from "../dtos/operator-transaction"
 
 export type PersistenceOperatorTransaction = {
@@ -9,7 +11,9 @@ export type PersistenceOperatorTransaction = {
   amount: number
   created_at: bigint
   external_id: string | null
-  comission_percentage: number | null
+  comission_percentage: Decimal | null
+  comission_type: string | null
+  partner_id: string | null
 }
 
 export class OperatorTransactionMapper {
@@ -21,7 +25,9 @@ export class OperatorTransactionMapper {
       amount: raw.amount,
       created_at: raw.created_at ? Number(raw.created_at) : undefined,
       external_id: raw.external_id ? raw.external_id : undefined,
-      comission_percentage: raw.comission_percentage ? raw.comission_percentage : undefined
+      comission_percentage: raw.comission_percentage ? raw.comission_percentage.toNumber() : undefined,
+      comission_type: raw.comission_type ? raw.comission_type as ComissionType : undefined,
+      partner_id: raw.partner_id ? raw.partner_id : undefined
     })
   }
 
@@ -33,7 +39,9 @@ export class OperatorTransactionMapper {
       amount: domain.amount,
       created_at: BigInt(domain.created_at),
       external_id: domain.external_id ? domain.external_id : null,
-      comission_percentage: domain.comission_percentage ? domain.comission_percentage : null
+      comission_percentage: domain.comission_percentage ? Decimal(domain.comission_percentage) : null,
+      comission_type: domain.comission_type ? domain.comission_type : null,
+      partner_id: domain.partner_id ? domain.partner_id : null
     }
   }
 
@@ -45,7 +53,8 @@ export class OperatorTransactionMapper {
       amount: domain.amount,
       created_at: domain.created_at,
       external_id: domain.external_id,
-      comission_percentage: domain.comission_percentage
+      comission_percentage: domain.comission_percentage,
+      comission_type: domain.comission_type
     }
   }
 }

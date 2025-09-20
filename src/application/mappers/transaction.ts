@@ -15,6 +15,7 @@ export type PersistenceTransaction = {
   lead_price: number | null
   lead: PersistenceLead | null
   bonus_amount: number | null
+  operator_id: string | null
 }
 
 export class TransactionMapper {
@@ -30,6 +31,7 @@ export class TransactionMapper {
       lead_price: raw.lead_price ? raw.lead_price : undefined,
       lead: raw.lead ? LeadMapper.toDomain(raw.lead) : undefined,
       bonus_amount: raw.bonus_amount || undefined,
+      operator_id: raw.operator_id || undefined
     })
   }
 
@@ -44,7 +46,8 @@ export class TransactionMapper {
       created_at: BigInt(domain.created_at),
       lead_price: domain.lead_price || null,
       lead: domain.lead ? LeadMapper.toPersistence(domain.lead) : null,
-      bonus_amount: domain.bonus_amount ? domain.bonus_amount : null
+      bonus_amount: domain.bonus_amount ? domain.bonus_amount : null,
+      operator_id: domain.operator_id ? domain.operator_id : null
     }
   }
 
@@ -58,7 +61,8 @@ export class TransactionMapper {
       lead_price: domain.lead_price,
       created_at: domain.created_at,
       lead: domain.lead ? LeadMapper.toDto(domain.lead) : undefined,
-      bonus_amount: domain.bonus_amount
+      bonus_amount: domain.bonus_amount,
+      operator_id: domain.operator_id
     }
   }
 }

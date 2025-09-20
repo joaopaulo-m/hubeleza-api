@@ -15,6 +15,7 @@ export type PartnerProps = AccountProps & {
   lng: string
   treatments: Treatment[]
   cnpj?: string
+  operator_id?: string
 }
 
 export class Partner extends Account {
@@ -64,6 +65,10 @@ export class Partner extends Account {
     return this.partnerProps.cnpj
   }
 
+  get operator_id() {
+    return this.partnerProps.operator_id
+  }
+
   constructor(props: Omit<PartnerProps, "id" | "created_at" | "status"> & { id?: string, created_at?: number, status?: PartnerStatus }) {
     super(props)
     this.partnerProps = {
@@ -77,7 +82,8 @@ export class Partner extends Account {
       lat: props.lat,
       lng: props.lng,
       treatments: props.treatments,
-      cnpj: props.cnpj
+      cnpj: props.cnpj,
+      operator_id: props.operator_id
     }
   }
 

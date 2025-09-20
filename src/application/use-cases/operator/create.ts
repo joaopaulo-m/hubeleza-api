@@ -1,13 +1,16 @@
 import { Operator } from "../../../domain/entities/operator";
+import { OperatorWallet } from "../../../domain/entities/operator-wallet";
 import { INVITE_COLABORATOR_EMAIL_HTML } from "../../../shared/emails/invite-colaborator";
 import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IOperatorRepository } from "../../contracts/repos/operator";
+import type { IOperatorWalletRepository } from "../../contracts/repos/operator-wallet";
 import type { IEmailService } from "../../contracts/services/email";
 
 export interface CreateOperatorDto {
   admin_id: string
   name: string
   email: string
+  document: string
   sign_up_comission_percentage?: number
   topup_comission_percentage?: number
 }
@@ -16,7 +19,8 @@ export class CreateOperatorUseCase {
   constructor(
     private readonly adminRepo: IAdminRepository,
     private readonly operatorRepo: IOperatorRepository,
-    private readonly emailService: IEmailService
+    private readonly operatorWalletRepo: IOperatorWalletRepository,
+    private readonly emailService: IEmailService,
   ){}
 
   async execute(props: CreateOperatorDto): Promise<Error | void> {
@@ -41,6 +45,14 @@ export class CreateOperatorUseCase {
       topup_comission_percentage: props.topup_comission_percentage
     })
     await this.operatorRepo.create(operator)
+
+    const operatorWallet = new OperatorWallet({
+      operator_id: operator.id,
+      document: props.document,
+      balance: 0,
+      transactions: []
+    })
+    await this.operatorWalletRepo.create(operatorWallet)
 
     const sendEmailResult = await this.emailService.sendEmail({
       subject: "Você foi convidado para Hubeleza!",

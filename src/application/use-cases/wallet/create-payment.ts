@@ -10,6 +10,7 @@ import type { IQueueService } from "../../contracts/services/queue"
 export interface CreateWalletPaymentDto {
   wallet_id: string
   amount: number
+  operator_id?: string
 }
 
 export interface CreateWalletPaymentReturn {
@@ -68,7 +69,8 @@ export class CreateWalletPaymentUseCase {
       status: TransactionStatus.PENDING_PAYMENT,
       type: TransactionType.INCOME,
       amount: props.amount,
-      bonus_amount: wallet.transactions.length === 0 ? FIRST_TRANSACTION_BONUS : undefined
+      bonus_amount: wallet.transactions.length === 0 ? FIRST_TRANSACTION_BONUS : undefined,
+      operator_id: props.operator_id
     })
     await this.transactionRepo.create(transaction)
 

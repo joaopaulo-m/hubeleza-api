@@ -3,6 +3,7 @@ import type { InviteTokenDto } from "../../dtos/invite-token";
 import { InviteTokenMapper } from "../../mappers/invite-token";
 
 export interface FetchInviteTokensDto {
+  operator_id?: string
   name?: string
   start_date?: number
   end_date?: number

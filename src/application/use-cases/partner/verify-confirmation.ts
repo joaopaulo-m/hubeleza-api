@@ -36,13 +36,13 @@ export class VerifyPartnerConfirmationUseCase {
 
     await this.emailService.sendEmail({
       email: partner.email,
-      content: `Oi ${partner.name}! Você ainda não completou seu cadastro na Hubeleza!`,
+      content: `Oi ${partner.name}, Você ainda não completou seu cadastro na Hubeleza!`,
       subject: "HUBELEZA: Cadastro pendente de confirmação"
     })
 
     await this.messagingService.sendMessage({
       phone_number: partner.phone_number,
-      message: `Oi ${partner.name}! Você ainda não completou seu cadastro na Hubeleza!`
+      message: `Oi ${partner.name}, Você ainda não completou seu cadastro na Hubeleza!`
     })
   }
 }

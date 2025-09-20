@@ -85,6 +85,8 @@ model Operator {
 
   wallet        OperatorWallet?
   invite_tokens InviteToken[]
+  transactions  Transaction[]
+  partners      Partner[]
 
   @@map("operators")
 }
@@ -104,15 +106,17 @@ model OperatorWallet {
 
 model OperatorTransaction {
   id                   String   @id
-  operator_wallet_id   String   @unique
+  operator_wallet_id   String
   type                 String
   amount               Int
   created_at           BigInt
   external_id          String?
   comission_percentage Decimal?
+  comission_type       String?
+  partner_id           String?
 
   operator_wallet OperatorWallet @relation(fields: [operator_wallet_id], references: [id], onDelete: Cascade)
-  invite_tokens   InviteToken[]
+  partner         Partner?       @relation(fields: [partner_id], references: [id], onDelete: SetNull)
 
   @@map("operator_transactions")
 }
@@ -133,10 +137,13 @@ model Partner {
   state        String
   lat          String
   lng          String
+  operator_id  String?
 
-  partners_treatments PartnerTreatment[]
-  leads_dispatch      LeadDispatch[]
-  wallet              Wallet?
+  partners_treatments   PartnerTreatment[]
+  leads_dispatch        LeadDispatch[]
+  wallet                Wallet?
+  operator              Operator?             @relation(fields: [operator_id], references: [id], onDelete: SetNull)
+  operator_transactions OperatorTransaction[]
 
   @@map("partners")
 }
@@ -168,6 +175,7 @@ model Wallet {
 model Transaction {
   id           String  @id
   wallet_id    String
+  operator_id  String?
   status       String
   type         String
   amount       Int
@@ -177,8 +185,10 @@ model Transaction {
   lead_id      String?
   bonus_amount Int?
 
-  wallet Wallet @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
-  lead   Lead?  @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  wallet        Wallet        @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  operator      Operator?     @relation(fields: [operator_id], references: [id], onDelete: SetNull)
+  invite_tokens InviteToken[]
 
   @@map("transactions")
 }
@@ -244,8 +254,8 @@ model InviteToken {
   operator_id    String?
   transaction_id String?
 
-  operator    Operator?            @relation(fields: [operator_id], references: [id], onDelete: Cascade)
-  transaction OperatorTransaction? @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  operator    Operator?    @relation(fields: [operator_id], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
 
   @@map("invite_tokens")
 }

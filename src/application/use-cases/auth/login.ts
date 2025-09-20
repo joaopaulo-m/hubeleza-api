@@ -29,11 +29,11 @@ export class LoginUseCase {
       return new Error("Account does not exists")
     }
 
-    if (account.password === "not-defined") {
-      let accountType: AccountType = AccountType.PARTNER
+    let accountType: AccountType = AccountType.PARTNER
+    if (account instanceof Admin) accountType = AccountType.ADMIN
+    if (account instanceof Operator) accountType = AccountType.OPERATOR
 
-      if (account instanceof Admin) accountType = AccountType.ADMIN
-      if (account instanceof Operator) accountType = AccountType.OPERATOR
+    if (account.password === "not-defined") {
 
       const token = this.jwtService.sign({
         account_id: account.id,
@@ -58,7 +58,7 @@ export class LoginUseCase {
 
       const tokenResult = this.jwtService.sign({
         account_id: account.id,
-        account_type: account instanceof Partner ? AccountType.PARTNER : AccountType.ADMIN
+        account_type: accountType
       })
 
       if (tokenResult instanceof Error) {

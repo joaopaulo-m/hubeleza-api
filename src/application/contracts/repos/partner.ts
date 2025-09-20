@@ -8,6 +8,7 @@ export type FindNearestPartnersProps = {
 export interface IPartnerRepository {
   countAll(): Promise<number>
   countByTreatment(treatment_id: string): Promise<number>
+  countByOperator(operator_id: string): Promise<number>
   countActive(): Promise<number>
   getTopPartnersByLeadCount(limit: number): Promise<{ partner_name: string, total_leads: number }[]>
   findById: (id: string) => Promise<null | Partner>

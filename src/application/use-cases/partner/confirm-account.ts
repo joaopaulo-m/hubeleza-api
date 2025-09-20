@@ -61,7 +61,8 @@ export class ConfirmPartnerAccountUseCase {
       const comissionOperatorResult = await this.addOperatorComissionUseCase.execute({
         operator_id: inviteToken.operator_id,
         transaction_id: props.transaction_id,
-        comission_type: ComissionType.SIGN_UP
+        comission_type: ComissionType.SIGN_UP,
+        partner_id: partner.id
       })
 
       if (comissionOperatorResult instanceof Error) {
