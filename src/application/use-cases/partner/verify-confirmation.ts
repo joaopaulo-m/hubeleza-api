@@ -1,4 +1,5 @@
 import { TransactionStatus } from "../../../domain/enums/transaction-status";
+import { ACCOUNT_CONFIRMATION_MESSAGE } from "../../../shared/constants/account-confirmation-message";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import type { ITransactionRepository } from "../../contracts/repos/transaction";
 import type { IEmailService } from "../../contracts/services/email";
@@ -36,13 +37,13 @@ export class VerifyPartnerConfirmationUseCase {
 
     await this.emailService.sendEmail({
       email: partner.email,
-      content: `Oi ${partner.name}, Você ainda não completou seu cadastro na Hubeleza!`,
+      content: ACCOUNT_CONFIRMATION_MESSAGE({ partner_name: partner.name, transaction_id: transaction.id }),
       subject: "HUBELEZA: Cadastro pendente de confirmação"
     })
 
     await this.messagingService.sendMessage({
       phone_number: partner.phone_number,
-      message: `Oi ${partner.name}, Você ainda não completou seu cadastro na Hubeleza!`
+      message: ACCOUNT_CONFIRMATION_MESSAGE({ partner_name: partner.name, transaction_id: transaction.id })
     })
   }
 }
