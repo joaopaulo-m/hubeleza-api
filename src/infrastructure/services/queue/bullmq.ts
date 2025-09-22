@@ -12,10 +12,11 @@ export class BullMQQueueService implements IQueueService {
     });
   }
 
-  async add(job: QueueJob): Promise<void> {
+  async add<T>(job: QueueJob<T>): Promise<void> {
     await this.queue.add(job.name, job.data, {
       attempts: 3,
-      removeOnComplete: 50
+      removeOnComplete: 50,
+      delay: job.delay
     });
   }
 }

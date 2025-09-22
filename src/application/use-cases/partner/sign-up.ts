@@ -13,6 +13,8 @@ import type { CreateWalletPaymentUseCase } from '../wallet/create-payment';
 import { PARTNER_INITAL_PAYMENT_AMOUNT } from '../../../shared/constants/inital-partner-payment-amount';
 import type { AxiosError } from 'axios';
 import type { IOperatorRepository } from '../../contracts/repos/operator';
+import type { IQueueService } from '../../contracts/services/queue';
+import type { VerifyPartnerConfirmationDto } from './verify-confirmation';
 
 export interface SignPartnerUpDto {
   invite_token: string
@@ -44,6 +46,7 @@ export class SignPartnerUpUseCase {
     private readonly operatorRepo: IOperatorRepository,
     private readonly geolocationService: IGeolocationService,
     private readonly paymentService: IPaymentService,
+    private readonly queueService: IQueueService,
     private readonly createWalletPaymentUseCase: CreateWalletPaymentUseCase
   ){}
 
@@ -127,6 +130,15 @@ export class SignPartnerUpUseCase {
     if (createInitialPaymentResult instanceof Error) {
       return new Error("Error creating partner initial payment: ", createInitialPaymentResult)
     }
+
+    await this.queueService.add<VerifyPartnerConfirmationDto>({
+      name: "verify_account_confirmation",
+      data: {
+        partner_id: partner.id,
+        transaction_id: createInitialPaymentResult.transaction_id,
+      },
+      delay: 30 * 60 * 1000 // 30 min
+    })
 
     if (inviteToken.operator_id) {
       const operator = await this.operatorRepo.findById(inviteToken.operator_id)

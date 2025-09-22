@@ -1,9 +1,9 @@
-export interface QueueJob {
+export interface QueueJob<T> {
   name: string;
-  data: Record<string, any>;
+  data: T;
   delay?: number
 }
 
 export interface IQueueService {
-  add(job: QueueJob): Promise<void>;
+  add<T = any>(job: QueueJob<T>): Promise<void>;
 }
