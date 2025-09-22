@@ -1,4 +1,5 @@
 import type { PixAddressKeyType } from "../../../shared/enums/pix-address-key-type";
+import { isPastFifthBusinessDay } from "../../../utils/is-path-fifth-business-day";
 import type { IOperatorRepository } from "../../contracts/repos/operator";
 import type { IOperatorWalletRepository } from "../../contracts/repos/operator-wallet";
 import type { IPaymentService } from "../../contracts/services/payment";
@@ -28,6 +29,14 @@ export class WithdrawOperatorWalletUseCase {
 
     if (!operatorWallet) {
       return new Error("Operator wallet not found")
+    }
+
+    if (!isPastFifthBusinessDay()) {
+      return new Error("Invalid withdraw date")
+    }
+
+    if (operatorWallet.hasExpenseTransactionThisMonth()) {
+      return new Error("Operator already made a withdraw in the current month")
     }
 
     const debitOperatorWalletResult = operatorWallet.debit(props.amount)

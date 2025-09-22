@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 
 import type { OperatorTransaction } from "./operator-transaction"
+import { TransactionType } from "../enums/transaction-type"
 
 export type OperatorWalletProps = {
   id: string
@@ -67,5 +68,26 @@ export class OperatorWallet {
     }
 
     this.props.balance += amount
+  }
+
+
+  public hasExpenseTransactionThisMonth(): boolean {
+    const nowInBrasilia = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })
+    )
+    const currentMonth = nowInBrasilia.getMonth()
+    const currentYear = nowInBrasilia.getFullYear()
+
+    return this.props.transactions.some(transaction => {
+      if (transaction.type !== TransactionType.EXPENSE) {
+        return false
+      }
+
+      const transactionDate = new Date(transaction.created_at)
+      const transactionMonth = transactionDate.getMonth()
+      const transactionYear = transactionDate.getFullYear()
+
+      return transactionMonth === currentMonth && transactionYear === currentYear
+    })
   }
 }
