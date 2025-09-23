@@ -27,8 +27,7 @@ export const makeSignPartnerUpController = () => {
   const createWalletPaymentUseCase = new CreateWalletPaymentUseCase(
     walletRepo,
     transactionRepo,
-    paymentService,
-    queueService
+    paymentService
   )
   const useCase = new SignPartnerUpUseCase(
     partnerRepo,
@@ -38,6 +37,7 @@ export const makeSignPartnerUpController = () => {
     operatorRepo,
     geolocationService,
     paymentService,
+    queueService,
     createWalletPaymentUseCase
   )
   return new SignPartnerUpController(useCase)

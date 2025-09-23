@@ -6,6 +6,8 @@ import type { IAdminRepository } from "../../contracts/repos/admin";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import { Operator } from '../../../domain/entities/operator';
 import type { IOperatorRepository } from '../../contracts/repos/operator';
+import { Affiliate } from '../../../domain/entities/affiliate';
+import type { IAffiliateRepository } from '../../contracts/repos/affiliate';
 
 export interface DefinePasswordDto {
   account_id: string
@@ -16,7 +18,8 @@ export class DefinePasswordUseCase {
   constructor(
     private readonly partnerRepo: IPartnerRepository,
     private readonly adminRepo: IAdminRepository,
-    private readonly operatorRepo: IOperatorRepository
+    private readonly operatorRepo: IOperatorRepository,
+    private readonly affiliateRepo: IAffiliateRepository
   ){}
 
   async execute(props: DefinePasswordDto): Promise<Error | void> {
@@ -45,21 +48,29 @@ export class DefinePasswordUseCase {
       await this.operatorRepo.update(account)
     }
 
+    if (account instanceof Affiliate) {
+      await this.affiliateRepo.update(account)
+    }
+
     return void 0;
   }
 
-  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin)> {
-    const partner = await this.partnerRepo.findById(email)
+  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin | Affiliate)> {
+    const partner = await this.partnerRepo.findByEmail(email)
 
     if (partner) return partner
 
-    const admin = await this.adminRepo.findById(email)
+    const admin = await this.adminRepo.findByEmail(email)
 
     if (admin) return admin
 
-    const operator = await this.operatorRepo.findById(email)
+    const operator = await this.operatorRepo.findByEmail(email)
 
     if (operator) return operator
+
+    const affiliate = await this.affiliateRepo.findByEmail(email)
+
+    if (affiliate) return affiliate
     
     return null
   }

@@ -18,5 +18,6 @@ export interface PartnerDto {
   lng: string
   treatments: TreatmentDto[]
   operator_id?: string
+  affiliate_id?: string
   password_not_defined?: boolean
 }
