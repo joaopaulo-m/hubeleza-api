@@ -18,6 +18,7 @@ import operatorRoutes from './routes/express/operator'
 import operatorWalletRoutes from './routes/express/operator-wallet'
 import affiliateRoutes from './routes/express/affiliate'
 import affiliateTransactionRoutes from './routes/express/affiliate-transaction'
+import affiliateWalletRoutes from './routes/express/affiliate-wallet'
 
 const app = express();
 
@@ -41,5 +42,6 @@ app.use(operatorRoutes)
 app.use(operatorWalletRoutes)
 app.use(affiliateRoutes)
 app.use(affiliateTransactionRoutes)
+app.use(affiliateWalletRoutes)
 
 export { app }
