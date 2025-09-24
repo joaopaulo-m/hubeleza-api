@@ -1,4 +1,5 @@
 import { Affiliate } from "../../domain/entities/affiliate"
+import { Decimal } from "../../generated/prisma/runtime/library"
 import type { AffiliateDto } from "../dtos/affiliate"
 
 export type PersistenceAffiliate = {
@@ -7,7 +8,7 @@ export type PersistenceAffiliate = {
   email: string
   password: string
   created_at: bigint
-  comission_percentage: number
+  comission_percentage: Decimal
   referral_code: string
 }
 
@@ -19,7 +20,7 @@ export class AffiliateMapper {
       email: raw.email,
       password: raw.password,
       referral_code: raw.referral_code,
-      comission_percentage: raw.comission_percentage,
+      comission_percentage: raw.comission_percentage.toNumber(),
       created_at: Number(raw.created_at)
     })
   }
@@ -31,7 +32,7 @@ export class AffiliateMapper {
       email: domain.email,
       password: domain.password,
       referral_code: domain.referral_code,
-      comission_percentage: domain.comission_percentage,
+      comission_percentage: Decimal(domain.comission_percentage),
       created_at: BigInt(domain.created_at)
     }
   }

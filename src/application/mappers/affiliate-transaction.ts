@@ -1,5 +1,6 @@
 import { AffiliateTransaction } from "../../domain/entities/affiliate-transaction"
 import type { TransactionType } from "../../domain/enums/transaction-type"
+import { Decimal } from "../../generated/prisma/runtime/library"
 import type { AffiliateTransactionDto } from "../dtos/affiliate-transaction"
 
 export type PersistenceAffiliateTransaction = {
@@ -8,7 +9,7 @@ export type PersistenceAffiliateTransaction = {
   type: string
   amount: number
   created_at: bigint
-  comission_percentage: number | null
+  comission_percentage: Decimal | null
   partner_id: string | null
 }
 
@@ -20,7 +21,7 @@ export class AffiliateTransactionMapper {
       partner_id: raw.partner_id ? raw.partner_id : undefined,
       type: raw.type as TransactionType,
       amount: raw.amount,
-      comission_percentage: raw.comission_percentage ? raw.comission_percentage : undefined,
+      comission_percentage: raw.comission_percentage ? raw.comission_percentage.toNumber() : undefined,
       created_at: Number(raw.created_at)
     })
   }
@@ -32,7 +33,7 @@ export class AffiliateTransactionMapper {
       partner_id: domain.partner_id ? domain.partner_id : null,
       type: domain.type,
       amount: domain.amount,
-      comission_percentage: domain.comission_percentage ? domain.comission_percentage : null,
+      comission_percentage: domain.comission_percentage ? Decimal(domain.comission_percentage) : null,
       created_at: BigInt(domain.created_at)
     }
   }
