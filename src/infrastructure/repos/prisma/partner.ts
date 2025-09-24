@@ -100,7 +100,6 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     });
 
     if (!partner) return null;
-
     return PartnerMapper.toDomain(partner);
   }
 

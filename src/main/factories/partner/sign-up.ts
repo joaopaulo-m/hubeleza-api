@@ -1,6 +1,7 @@
 import { SignPartnerUpUseCase } from "../../../application/use-cases/partner/sign-up"
 import { CreateWalletPaymentUseCase } from "../../../application/use-cases/wallet/create-payment"
 import { SignPartnerUpController } from "../../../infrastructure/controllers/partner/sign-up"
+import { PrismaAffiliateRepository } from "../../../infrastructure/repos/prisma/affiliate"
 import { PrismaInviteTokenRepository } from "../../../infrastructure/repos/prisma/invite-token"
 import { PrismaOperatorRepository } from "../../../infrastructure/repos/prisma/operator"
 import { PrismaPartnerRepository } from "../../../infrastructure/repos/prisma/partner"
@@ -14,6 +15,7 @@ import { BullMQQueueService } from "../../../infrastructure/services/queue/bullm
 export const makeSignPartnerUpController = () => {
   const partnerRepo = new PrismaPartnerRepository()
   const inviteTokenRepo = new PrismaInviteTokenRepository()
+  const affiliateRepo = new PrismaAffiliateRepository()
   const treatmentRepo = new PrismaTreatmentRepository()
   const walletRepo = new PrismaWalletRepository()
   const transactionRepo = new PrismaTransactionRepository()
@@ -32,6 +34,7 @@ export const makeSignPartnerUpController = () => {
   const useCase = new SignPartnerUpUseCase(
     partnerRepo,
     inviteTokenRepo,
+    affiliateRepo,
     treatmentRepo,
     walletRepo,
     operatorRepo,
