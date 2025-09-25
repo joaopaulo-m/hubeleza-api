@@ -7,6 +7,7 @@ import { makeGetPartnerDashboardDataController } from "../../factories/dashboard
 import { makeGetAdminDashboardDataController } from "../../factories/dashboard/get-admin-data";
 import { makeGetTransactionsDashboardDataController } from "../../factories/dashboard/get-transactions-data";
 import { makeGetOperatorDashboardDataController } from "../../factories/dashboard/get-operator-data";
+import { makeGetAffiliateDashboardDataController } from "../../factories/dashboard/get-affiliate-data";
 
 const router = Router()
 
@@ -36,6 +37,14 @@ router.get("/dashboards/partners", verifyToken([AccountType.PARTNER]), async (re
 router.get("/dashboards/operators", verifyToken([AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const { account_id } = req.account
   const controller = makeGetOperatorDashboardDataController();
+  
+  const { statusCode, response } = await controller.handle(account_id)
+  res.status(statusCode).json(response);
+})
+
+router.get("/dashboards/affiliates", verifyToken([AccountType.AFFILIATE]), async (req: Request, res: Response) => {
+  const { account_id } = req.account
+  const controller = makeGetAffiliateDashboardDataController();
   
   const { statusCode, response } = await controller.handle(account_id)
   res.status(statusCode).json(response);

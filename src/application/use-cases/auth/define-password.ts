@@ -56,19 +56,19 @@ export class DefinePasswordUseCase {
   }
 
   private async findAccount(email: string): Promise<null | (Partner | Operator | Admin | Affiliate)> {
-    const partner = await this.partnerRepo.findByEmail(email)
+    const partner = await this.partnerRepo.findById(email)
 
     if (partner) return partner
 
-    const admin = await this.adminRepo.findByEmail(email)
+    const admin = await this.adminRepo.findById(email)
 
     if (admin) return admin
 
-    const operator = await this.operatorRepo.findByEmail(email)
+    const operator = await this.operatorRepo.findById(email)
 
     if (operator) return operator
 
-    const affiliate = await this.affiliateRepo.findByEmail(email)
+    const affiliate = await this.affiliateRepo.findById(email)
 
     if (affiliate) return affiliate
     

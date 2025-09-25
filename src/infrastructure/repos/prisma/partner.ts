@@ -32,6 +32,14 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     })
   }
 
+  async countByAffiliate(affiliate_id: string): Promise<number> {
+    return await prisma.partner.count({
+      where: {
+        affiliate_id
+      }
+    })
+  }
+
   async countActive(): Promise<number> {
     return await prisma.partner.count({
       where: {
