@@ -43,7 +43,7 @@ router.post("/partners", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]),
   res.status(statusCode).json(response);
 })
 
-router.post("/partners/invite-tokens/:invite_token", async (req: Request, res: Response) => {
+router.post("/partners/sign-up", async (req: Request, res: Response) => {
   const controller = makeSignPartnerUpController();
   const {  
     name,
@@ -58,10 +58,11 @@ router.post("/partners/invite-tokens/:invite_token", async (req: Request, res: R
     state,
     treatment_ids
   } = req.body;
-  const { invite_token } = req.params 
+  const { token, code } = req.query 
 
   const { statusCode, response } = await controller.handle({
-    invite_token,
+    invite_token: token ? token.toString() : undefined,
+    referral_code: code ? code.toString() : undefined,
     name,
     company_name,
     cpf,
@@ -181,7 +182,7 @@ router.get("/partners/export/csv", verifyToken([AccountType.ADMIN, AccountType.O
   res.send(response)
 })
 
-router.get("/partners/:partner_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
+router.get("/partners/:partner_id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR, AccountType.AFFILIATE]), async (req: Request, res: Response) => {
   const controller = makeGetPartnerByIdController();
   const { partner_id } = req.params;
 
