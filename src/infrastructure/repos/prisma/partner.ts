@@ -213,6 +213,7 @@ export class PrismaPartnerRepository implements IPartnerRepository {
   async getAll(props?: FetchPartersDto) {
     const partners = await prisma.partner.findMany({
       where: {
+        affiliate_id: props?.affiliate_id,
         name: props?.name
         ? {
             contains: props.name,

@@ -127,8 +127,9 @@ router.delete("/partners/:partner_id", verifyToken([AccountType.ADMIN, AccountTy
   res.status(statusCode).json(response);
 })
 
-router.get("/partners", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
+router.get("/partners", verifyToken([AccountType.ADMIN, AccountType.OPERATOR, AccountType.AFFILIATE]), async (req: Request, res: Response) => {
   const controller = makeGetAllPartnersController();
+  const { account_type, account_id } = req.account
   const {
     name,
     city,
@@ -141,6 +142,7 @@ router.get("/partners", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), 
 
 
   const { statusCode, response } = await controller.handle({
+    affiliate_id: account_type === AccountType.AFFILIATE ? account_id : undefined,
     name: name ? name.toString() : undefined,
     city: city ? city.toString() : undefined,
     state: state ? state.toString() : undefined,
