@@ -8,6 +8,8 @@ import type { IJwtService } from "../../contracts/services/jwt";
 import { AccountType } from "../../../shared/enums/account-type";
 import { Operator } from '../../../domain/entities/operator';
 import type { IOperatorRepository } from '../../contracts/repos/operator';
+import type { IAffiliateRepository } from '../../contracts/repos/affiliate';
+import { Affiliate } from '../../../domain/entities/affiliate';
 
 export interface LoginDto {
   email: string
@@ -19,6 +21,7 @@ export class LoginUseCase {
     private readonly partnerRepo: IPartnerRepository,
     private readonly adminRepo: IAdminRepository,
     private readonly operatorRepo: IOperatorRepository,
+    private readonly affiliateRepo: IAffiliateRepository,
     private readonly jwtService: IJwtService,
   ){}
 
@@ -32,6 +35,7 @@ export class LoginUseCase {
     let accountType: AccountType = AccountType.PARTNER
     if (account instanceof Admin) accountType = AccountType.ADMIN
     if (account instanceof Operator) accountType = AccountType.OPERATOR
+    if (account instanceof Affiliate) accountType = AccountType.AFFILIATE
 
     if (account.password === "not-defined") {
 
@@ -74,7 +78,7 @@ export class LoginUseCase {
     }
   }
 
-  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin)> {
+  private async findAccount(email: string): Promise<null | (Partner | Operator | Admin | Affiliate)> {
     const partner = await this.partnerRepo.findByEmail(email)
 
     if (partner) return partner
@@ -86,6 +90,10 @@ export class LoginUseCase {
     const operator = await this.operatorRepo.findByEmail(email)
 
     if (operator) return operator
+
+    const affiliate = await this.affiliateRepo.findByEmail(email)
+
+    if (affiliate) return affiliate
     
     return null
   }

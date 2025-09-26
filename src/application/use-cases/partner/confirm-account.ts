@@ -4,6 +4,7 @@ import type { IInviteTokenRepository } from "../../contracts/repos/invite-token"
 import type { IPartnerRepository } from "../../contracts/repos/partner";
 import type { IContractService } from "../../contracts/services/contract";
 import type { IMessagingService } from "../../contracts/services/messaging";
+import type { AddAffiliateComissionUseCase } from "../affiliate/add-comission";
 import type { AddOperatorComissionUseCase } from "../operator/add-comission";
 
 export interface ConfirmPartnerAccountDto {
@@ -17,7 +18,8 @@ export class ConfirmPartnerAccountUseCase {
     private readonly inviteTokenRepo: IInviteTokenRepository,
     private readonly contractService: IContractService,
     private readonly messagingService: IMessagingService,
-    private readonly addOperatorComissionUseCase: AddOperatorComissionUseCase
+    private readonly addOperatorComissionUseCase: AddOperatorComissionUseCase,
+    private readonly addAffiliateComissionUseCase: AddAffiliateComissionUseCase
   ){}
 
   async execute(props: ConfirmPartnerAccountDto): Promise<Error | void> {
@@ -36,12 +38,12 @@ export class ConfirmPartnerAccountUseCase {
     await this.partnerRepo.update(partner)
 
     const contractBuffer = await this.contractService.generatePDF({
-        client_name: partner.name,
-        company_name: partner.company_name,
-        cpf: partner.cpf,
-        city: partner.city,
-        state: partner.state
-      })
+      client_name: partner.name,
+      company_name: partner.company_name,
+      cpf: partner.cpf,
+      city: partner.city,
+      state: partner.state
+    })
 
     const sendDocumentResult = await this.messagingService.sendDocument({
       phone_number: partner.phone_number,
@@ -69,6 +71,18 @@ export class ConfirmPartnerAccountUseCase {
         console.error("Error comissioning operator: ", comissionOperatorResult)
       } else {
         this.inviteTokenRepo.delete(inviteToken.id)
+      }
+    }
+
+    if (partner.affiliate_id) {
+      const addAffiliateComissionResult = await this.addAffiliateComissionUseCase.execute({
+        transaction_id: props.transaction_id,
+        affiliate_id: partner.affiliate_id,
+        partner_id: partner.id
+      })
+
+      if (addAffiliateComissionResult instanceof Error) {
+        console.error("Error adding affiliate comission: ", addAffiliateComissionResult)
       }
     }
 

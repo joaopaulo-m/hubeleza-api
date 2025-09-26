@@ -34,7 +34,6 @@ router.post("/admins", verifyToken([AccountType.ADMIN]), async (req: Request, re
     superadmin,
     name,
     email,
-    password
   } = req.body;
   const { account_id } = req.account
 

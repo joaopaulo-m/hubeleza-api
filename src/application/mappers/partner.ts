@@ -21,6 +21,7 @@ export type PersistencePartner = {
   lat: string
   lng: string
   operator_id: string | null
+  affiliate_id: string | null
   partners_treatments: { treatment: PersistenceTreatment }[]
 }
 
@@ -43,6 +44,7 @@ export class PartnerMapper {
       lat: raw.lat,
       lng: raw.lng,
       operator_id: raw.operator_id || undefined,
+      affiliate_id: raw.affiliate_id || undefined,
       treatments: raw.partners_treatments.map(pt => TreatmentMapper.toDomain(pt.treatment))
     })
   }
@@ -65,6 +67,7 @@ export class PartnerMapper {
       lat: domain.lat,
       lng: domain.lng,
       operator_id: domain.operator_id ? domain.operator_id : null,
+      affiliate_id: domain.affiliate_id ? domain.affiliate_id : null,
       partners_treatments: domain.treatments.map(t => ({
         treatment: TreatmentMapper.toPersistence(t)
       }))
@@ -89,6 +92,7 @@ export class PartnerMapper {
       lng: domain.lng,
       treatments: domain.treatments.map(TreatmentMapper.toDto),
       operator_id: domain.operator_id,
+      affiliate_id: domain.affiliate_id,
       password_not_defined: domain.password === "not-defined" ? true : undefined
     }
   }

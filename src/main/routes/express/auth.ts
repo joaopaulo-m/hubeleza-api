@@ -5,6 +5,7 @@ import { verifyToken } from "./middlewares/jwt";
 import { AccountType } from "../../../shared/enums/account-type";
 import { makeDefinePasswordController } from "../../factories/auth/define-password";
 import { makeLoginController } from "../../factories/auth/login";
+import { Account } from "../../../domain/entities/account";
 
 const router = Router()
 
@@ -16,7 +17,7 @@ const router = Router()
 //   res.status(statusCode).json(response);
 // })
 
-router.post("/auth/define-password", verifyToken([AccountType.OPERATOR, AccountType.PARTNER, AccountType.ADMIN]), async (req: Request, res: Response) => {
+router.post("/auth/define-password", verifyToken([AccountType.OPERATOR, AccountType.PARTNER, AccountType.ADMIN, AccountType.AFFILIATE]), async (req: Request, res: Response) => {
   const controller = makeDefinePasswordController();
   const { password } = req.body
   const { account_id } = req.account

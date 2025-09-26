@@ -3,6 +3,7 @@ import type { PartnerDto } from "../../dtos/partner";
 import { PartnerMapper } from "../../mappers/partner";
 
 export interface FetchPartersDto {
+  affiliate_id?: string
   name?: string
   city?: string
   state?: string

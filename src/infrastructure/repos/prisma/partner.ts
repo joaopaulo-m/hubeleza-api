@@ -32,6 +32,14 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     })
   }
 
+  async countByAffiliate(affiliate_id: string): Promise<number> {
+    return await prisma.partner.count({
+      where: {
+        affiliate_id
+      }
+    })
+  }
+
   async countActive(): Promise<number> {
     return await prisma.partner.count({
       where: {
@@ -100,7 +108,6 @@ export class PrismaPartnerRepository implements IPartnerRepository {
     });
 
     if (!partner) return null;
-
     return PartnerMapper.toDomain(partner);
   }
 
@@ -206,6 +213,7 @@ export class PrismaPartnerRepository implements IPartnerRepository {
   async getAll(props?: FetchPartersDto) {
     const partners = await prisma.partner.findMany({
       where: {
+        affiliate_id: props?.affiliate_id,
         name: props?.name
         ? {
             contains: props.name,

@@ -138,12 +138,15 @@ model Partner {
   lat          String
   lng          String
   operator_id  String?
+  affiliate_id String?
 
-  partners_treatments   PartnerTreatment[]
-  leads_dispatch        LeadDispatch[]
-  wallet                Wallet?
-  operator              Operator?             @relation(fields: [operator_id], references: [id], onDelete: SetNull)
-  operator_transactions OperatorTransaction[]
+  partners_treatments    PartnerTreatment[]
+  leads_dispatch         LeadDispatch[]
+  wallet                 Wallet?
+  operator               Operator?              @relation(fields: [operator_id], references: [id], onDelete: SetNull)
+  operator_transactions  OperatorTransaction[]
+  affiliate              Affiliate?             @relation(fields: [affiliate_id], references: [id], onDelete: SetNull)
+  affiliate_transactions AffiliateTransaction[]
 
   @@map("partners")
 }
@@ -191,6 +194,48 @@ model Transaction {
   invite_tokens InviteToken[]
 
   @@map("transactions")
+}
+
+model Affiliate {
+  id                   String  @id
+  name                 String
+  email                String
+  password             String
+  created_at           BigInt
+  referral_code        String
+  comission_percentage Decimal
+
+  wallet   AffiliateWallet?
+  partners Partner[]
+
+  @@map("affiliates")
+}
+
+model AffiliateWallet {
+  id           String @id
+  affiliate_id String @unique
+  document     String
+  balance      Int
+
+  affiliate    Affiliate              @relation(fields: [affiliate_id], references: [id], onDelete: Cascade)
+  transactions AffiliateTransaction[]
+
+  @@map("affiliate_wallets")
+}
+
+model AffiliateTransaction {
+  id                   String   @id
+  affiliate_wallet_id  String
+  partner_id           String?
+  type                 String
+  amount               Int
+  created_at           BigInt
+  comission_percentage Decimal?
+
+  affiliate_wallet AffiliateWallet @relation(fields: [affiliate_wallet_id], references: [id], onDelete: Cascade)
+  partner          Partner?        @relation(fields: [partner_id], references: [id], onDelete: SetNull)
+
+  @@map("affiliate_transactions")
 }
 
 model Lead {
