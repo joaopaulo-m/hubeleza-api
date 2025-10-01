@@ -10,6 +10,9 @@ export type AffiliateTransactionProps = {
   created_at: number
   comission_percentage?: number
   partner_id?: string
+  lead_id?: string
+  lead_price?: number
+  lead_comission_amount?: number
 }
 
 export class AffiliateTransaction {
@@ -41,6 +44,18 @@ export class AffiliateTransaction {
   
   get partner_id() {
     return this.props.partner_id
+  }
+
+  get lead_id() {
+    return this.props.lead_id
+  }
+
+  get lead_price() {
+    return this.props.lead_price
+  }
+
+  get lead_comission_amount() {
+    return this.props.lead_comission_amount
   }
 
   constructor(props: Omit<AffiliateTransactionProps, "id" | "created_at"> & { id?: string, created_at?: number }) {

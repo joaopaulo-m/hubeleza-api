@@ -19,7 +19,8 @@ router.post("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]
     email,
     document,
     referral_code,
-    comission_percentage
+    comission_percentage,
+    lead_comission_amount
   } = req.body;
 
   const { statusCode, response } = await controller.handle({
@@ -27,7 +28,8 @@ router.post("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]
     email,
     document,
     referral_code,
-    comission_percentage
+    comission_percentage,
+    lead_comission_amount
   })
   res.status(statusCode).json(response);
 })
@@ -38,14 +40,16 @@ router.patch("/affiliates/:affiliate_id", verifyToken([AccountType.ADMIN, Accoun
   const {
     name,
     referral_code,
-    comission_percentage
+    comission_percentage,
+    lead_comission_amount
   } = req.body;
 
   const { statusCode, response } = await controller.handle({
     affiliate_id,
     name,
     referral_code,
-    comission_percentage
+    comission_percentage,
+    lead_comission_amount
   })
   res.status(statusCode).json(response);
 })

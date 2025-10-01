@@ -4,6 +4,7 @@ export interface UpdateAffiliateDto {
   affiliate_id: string
   name?: string
   comission_percentage?: number
+  lead_comission_amount?: number
   referral_code?: string
 }
 
@@ -25,6 +26,10 @@ export class UpdateAffiliateUseCase {
 
     if (props.comission_percentage) {
       affiliate.updateComissionPercentage(props.comission_percentage)
+    }
+
+    if (props.lead_comission_amount) {
+      affiliate.updateLeadComissionAmount(props.lead_comission_amount)
     }
 
     if (props.referral_code) {

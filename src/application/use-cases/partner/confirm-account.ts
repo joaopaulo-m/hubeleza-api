@@ -1,4 +1,5 @@
 import { PartnerStatus } from "../../../domain/enums/partner-status";
+import { AffiliateCommissionType } from "../../../shared/enums/affiliate-comission-type";
 import { ComissionType } from "../../../shared/enums/comission-type";
 import type { IInviteTokenRepository } from "../../contracts/repos/invite-token";
 import type { IPartnerRepository } from "../../contracts/repos/partner";
@@ -76,6 +77,7 @@ export class ConfirmPartnerAccountUseCase {
 
     if (partner.affiliate_id) {
       const addAffiliateComissionResult = await this.addAffiliateComissionUseCase.execute({
+        type: AffiliateCommissionType.SIGN_UP,
         transaction_id: props.transaction_id,
         affiliate_id: partner.affiliate_id,
         partner_id: partner.id

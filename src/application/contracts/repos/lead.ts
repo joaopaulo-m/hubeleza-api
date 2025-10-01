@@ -14,6 +14,7 @@ export interface ILeadRepository {
   countAllDispatches(): Promise<number>
   countConverted: () => Promise<number>
   countByPartnerId(partner_id: string): Promise<number>
+  countByAffiliateId: (affiliate_id: string) => Promise<number>
   countByPartnerPerTreatment(partner_id: string): Promise<{ treatment: string; count: number }[]>
   findById: (id: string) => Promise<null | Lead>
   findByPhoneNumber: (phone_number: string) => Promise<null | Lead>

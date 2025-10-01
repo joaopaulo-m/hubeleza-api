@@ -43,6 +43,19 @@ export class PrismaLeadRepository implements ILeadRepository {
     })
   }
 
+  async countByAffiliateId(affiliate_id: string): Promise<number> {
+    return await prisma.affiliateTransaction.count({
+      where: {
+        affiliate_wallet: {
+          affiliate_id: affiliate_id
+        },
+        lead_id: {
+          not: null
+        }
+      }
+    })
+  }
+
   async countByPartnerPerTreatment(partner_id: string) {
     const raw = await prisma.$queryRawUnsafe<
       { treatment: string; count: number }[]

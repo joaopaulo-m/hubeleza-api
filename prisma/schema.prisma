@@ -197,13 +197,14 @@ model Transaction {
 }
 
 model Affiliate {
-  id                   String  @id
-  name                 String
-  email                String
-  password             String
-  created_at           BigInt
-  referral_code        String
-  comission_percentage Decimal
+  id                    String  @id
+  name                  String
+  email                 String
+  password              String
+  created_at            BigInt
+  referral_code         String
+  comission_percentage  Decimal
+  lead_comission_amount Int?
 
   wallet   AffiliateWallet?
   partners Partner[]
@@ -224,16 +225,20 @@ model AffiliateWallet {
 }
 
 model AffiliateTransaction {
-  id                   String   @id
-  affiliate_wallet_id  String
-  partner_id           String?
-  type                 String
-  amount               Int
-  created_at           BigInt
-  comission_percentage Decimal?
+  id                    String   @id
+  affiliate_wallet_id   String
+  partner_id            String?
+  lead_id               String?
+  lead_price            Int?
+  lead_comission_amount Int?
+  type                  String
+  amount                Int
+  created_at            BigInt
+  comission_percentage  Decimal?
 
   affiliate_wallet AffiliateWallet @relation(fields: [affiliate_wallet_id], references: [id], onDelete: Cascade)
   partner          Partner?        @relation(fields: [partner_id], references: [id], onDelete: SetNull)
+  lead             Lead?           @relation(fields: [lead_id], references: [id], onDelete: SetNull)
 
   @@map("affiliate_transactions")
 }
@@ -247,9 +252,10 @@ model Lead {
   lng          String
   created_at   BigInt
 
-  leads_treatments LeadTreatment[]
-  leads_dispatch   LeadDispatch[]
-  transactions     Transaction[]
+  leads_treatments       LeadTreatment[]
+  leads_dispatch         LeadDispatch[]
+  transactions           Transaction[]
+  affiliate_transactions AffiliateTransaction[]
 
   @@map("leads")
 }

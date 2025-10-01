@@ -8,6 +8,7 @@ import { makeGetAllLeadsController } from "../../factories/lead/get-all";
 import { makeGetPartnerLeadsController } from "../../factories/lead/get-by-partner";
 import { verifyToken } from "./middlewares/jwt";
 import { AccountType } from "../../../shared/enums/account-type";
+import { makeGetLeadByIdController } from "../../factories/lead/get-by-id";
 
 const router = Router()
 
@@ -17,14 +18,16 @@ router.post("/flow-webhook", async (req: Request, res: Response) => {
     post_id,
     nome,
     Whatsapp,
-    cep
+    cep,
+    affiliate_code
   } = req.body;
 
   const { statusCode, response } = await controller.handle({
     form_id: post_id,
     name: nome,
     phone_number: Whatsapp,
-    cep: cep.replace(/\D/g, '')
+    cep: cep.replace(/\D/g, ''),
+    affiliate_code
   })
   res.status(statusCode).json(response);
 })
@@ -59,6 +62,14 @@ router.get("/leads", authenticationKeyMiddleware, async (req: Request, res: Resp
   const controller = makeGetAllLeadsController();
 
   const { statusCode, response } = await controller.handle()
+  res.status(statusCode).json(response);
+})
+
+router.get("/leads/:lead_id/id", verifyToken([AccountType.AFFILIATE, AccountType.ADMIN, AccountType.OPERATOR, AccountType.PARTNER]), async (req: Request, res: Response) => {
+  const controller = makeGetLeadByIdController();
+  const { lead_id } = req.params
+
+  const { statusCode, response } = await controller.handle(lead_id)
   res.status(statusCode).json(response);
 })
 

@@ -1,4 +1,3 @@
-import { AddAffiliateComissionUseCase } from "../../../application/use-cases/affiliate/add-comission"
 import { AddOperatorComissionUseCase } from "../../../application/use-cases/operator/add-comission"
 import { ConfirmPartnerAccountUseCase } from "../../../application/use-cases/partner/confirm-account"
 import { ConfirmWalletPaymentUseCase } from "../../../application/use-cases/wallet/confirm-payment"
@@ -15,6 +14,7 @@ import { PrismaTransactionRepository } from "../../../infrastructure/repos/prism
 import { PrismaWalletRepository } from "../../../infrastructure/repos/prisma/wallet"
 import { EvolutionMessagingService } from "../../../infrastructure/services/evolution-api"
 import { PuppeteerContractService } from "../../../infrastructure/services/puppeteer"
+import { makeAddAffiliateComissionUseCase } from "../affiliate/add-comission"
 
 export const makeConfirmWalletPaymentController = () => {
   const transactionRepo = new PrismaTransactionRepository()
@@ -39,13 +39,7 @@ export const makeConfirmWalletPaymentController = () => {
     operatorWalletRepo,
     operatorTransactionRepo
   )
-  const addAffiliateComissionUseCase = new AddAffiliateComissionUseCase(
-    affiliateRepo,
-    affiliateWalletRepo,
-    affiliateTransactionRepo,
-    transactionRepo,
-    partnerRepo
-  )
+  const addAffiliateComissionUseCase = makeAddAffiliateComissionUseCase()
   const confirmPartnerAccountUseCase = new ConfirmPartnerAccountUseCase(
     partnerRepo,
     inviteTokenRepo,

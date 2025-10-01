@@ -8,6 +8,7 @@ export interface CreateAffiliateDto {
   email: string
   referral_code: string
   comission_percentage: number
+  lead_comission_amount?: number
   document: string
 }
 
@@ -35,7 +36,8 @@ export class CreateAffiliateUseCase {
       email: props.email,
       password: "not-defined",
       referral_code: props.referral_code,
-      comission_percentage: props.comission_percentage
+      comission_percentage: props.comission_percentage,
+      lead_comission_amount: props.lead_comission_amount
     })
     const wallet = new AffiliateWallet({
       affiliate_id: affiliate.id,
