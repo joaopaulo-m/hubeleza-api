@@ -72,7 +72,7 @@ router.get("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR])
   })
   res.status(statusCode).json(response);
 })
-router.get("/affiliates/:affiliate_id/id", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
+router.get("/affiliates/:affiliate_id/id", async (req: Request, res: Response) => {
   const controller = makeGetAffiliateByIdController();
   const { affiliate_id } = req.params
 

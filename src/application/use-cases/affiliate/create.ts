@@ -1,7 +1,9 @@
 import { Affiliate } from "../../../domain/entities/affiliate";
 import { AffiliateWallet } from "../../../domain/entities/affiliate-wallet";
+import { INVITE_AFFILIATE_EMAIL_HTML } from "../../../shared/emails/invite-affiliate";
 import type { IAffiliateRepository } from "../../contracts/repos/affiliate";
 import type { IAffiliateWalletRepository } from "../../contracts/repos/affiliate-wallet";
+import type { IEmailService } from "../../contracts/services/email";
 
 export interface CreateAffiliateDto {
   name: string
@@ -15,7 +17,8 @@ export interface CreateAffiliateDto {
 export class CreateAffiliateUseCase {
   constructor(
     private readonly affiliateRepo: IAffiliateRepository,
-    private readonly affiliateWalletRepo: IAffiliateWalletRepository
+    private readonly affiliateWalletRepo: IAffiliateWalletRepository,
+    private readonly emailService: IEmailService
   ){}
 
   async execute(props: CreateAffiliateDto): Promise<Error | void> {
@@ -47,6 +50,19 @@ export class CreateAffiliateUseCase {
 
     await this.affiliateRepo.create(affiliate)
     await this.affiliateWalletRepo.create(wallet)
+
+    const sendDefinePasswordEmailResult = await this.emailService.sendEmail({
+      subject: "Você foi convidado para Hubeleza!",
+      email: affiliate.email,
+      content: INVITE_AFFILIATE_EMAIL_HTML({
+        affiliate_id: affiliate.id,
+        affiliate_name: affiliate.name
+      })
+    })
+
+    if (sendDefinePasswordEmailResult instanceof Error) {
+      console.error("Error sending affiliate define password email: ", sendDefinePasswordEmailResult)
+    }
 
     return void 0
   }
