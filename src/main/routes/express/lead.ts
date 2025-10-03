@@ -25,7 +25,7 @@ router.post("/flow-webhook", async (req: Request, res: Response) => {
   const { statusCode, response } = await controller.handle({
     form_id: post_id,
     name: nome,
-    phone_number: Whatsapp,
+    phone_number: Whatsapp.replace(/\D/g, ''),
     cep: cep.replace(/\D/g, ''),
     affiliate_code
   })

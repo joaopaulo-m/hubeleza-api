@@ -9,6 +9,8 @@ export class DistributeLeadController {
     const result = await this.useCase.execute(props);
     
     if (result instanceof Error) {
+      console.log("Error on lead webhook: ", result)
+
       return {
         statusCode: 400,
         response: {
