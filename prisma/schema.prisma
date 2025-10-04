@@ -202,7 +202,10 @@ model Affiliate {
   email                 String
   password              String
   created_at            BigInt
+  status                String  @default("CONFIRMATION_PENDING")
   referral_code         String
+  phone_number          String  @default("")
+  ig_username           String  @default("@")
   comission_percentage  Decimal
   lead_comission_amount Int?
 

@@ -1,5 +1,6 @@
 import { Affiliate } from "../../../domain/entities/affiliate";
 import { AffiliateWallet } from "../../../domain/entities/affiliate-wallet";
+import { AffiliateStatus } from "../../../domain/enums/affiliate-status";
 import { INVITE_AFFILIATE_EMAIL_HTML } from "../../../shared/emails/invite-affiliate";
 import type { IAffiliateRepository } from "../../contracts/repos/affiliate";
 import type { IAffiliateWalletRepository } from "../../contracts/repos/affiliate-wallet";
@@ -9,6 +10,8 @@ export interface CreateAffiliateDto {
   name: string
   email: string
   referral_code: string
+  phone_number: string
+  ig_username: string
   comission_percentage: number
   lead_comission_amount?: number
   document: string
@@ -38,6 +41,9 @@ export class CreateAffiliateUseCase {
       name: props.name,
       email: props.email,
       password: "not-defined",
+      status: AffiliateStatus.ACTIVE,
+      phone_number: props.phone_number,
+      ig_username: props.ig_username,
       referral_code: props.referral_code,
       comission_percentage: props.comission_percentage,
       lead_comission_amount: props.lead_comission_amount

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "affiliates" ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'CONFIRMATION_PENDING';

@@ -1,4 +1,5 @@
 import { Affiliate } from "../../domain/entities/affiliate"
+import type { AffiliateStatus } from "../../domain/enums/affiliate-status"
 import { Decimal } from "../../generated/prisma/runtime/library"
 import type { AffiliateDto } from "../dtos/affiliate"
 
@@ -8,6 +9,9 @@ export type PersistenceAffiliate = {
   email: string
   password: string
   created_at: bigint
+  status: string
+  phone_number: string
+  ig_username: string
   comission_percentage: Decimal
   lead_comission_amount: number | null
   referral_code: string
@@ -20,6 +24,9 @@ export class AffiliateMapper {
       name: raw.name,
       email: raw.email,
       password: raw.password,
+      status: raw.status as AffiliateStatus,
+      phone_number: raw.phone_number,
+      ig_username: raw.ig_username,
       referral_code: raw.referral_code,
       comission_percentage: raw.comission_percentage.toNumber(),
       lead_comission_amount: raw.lead_comission_amount || undefined,
@@ -33,6 +40,9 @@ export class AffiliateMapper {
       name: domain.name,
       email: domain.email,
       password: domain.password,
+      status: domain.status,
+      phone_number: domain.phone_number,
+      ig_username: domain.ig_username,
       referral_code: domain.referral_code,
       comission_percentage: Decimal(domain.comission_percentage),
       lead_comission_amount: domain.lead_comission_amount ? domain.lead_comission_amount : null,
@@ -45,7 +55,9 @@ export class AffiliateMapper {
       id: domain.id,
       name: domain.name,
       email: domain.email,
-      password: domain.password,
+      status: domain.status,
+      phone_number: domain.phone_number,
+      ig_username: domain.ig_username,
       referral_code: domain.referral_code,
       comission_percentage: domain.comission_percentage,
       lead_comission_amount: domain.lead_comission_amount,

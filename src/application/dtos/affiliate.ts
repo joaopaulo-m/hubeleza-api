@@ -2,8 +2,10 @@ export interface AffiliateDto {
   id: string
   name: string
   email: string
-  password: string
   created_at: number
+  status: string
+  phone_number: string
+  ig_username: string
   comission_percentage: number
   lead_comission_amount?: number
   referral_code: string

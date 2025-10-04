@@ -9,6 +9,7 @@ import { makeUpdateAffiliateController } from "../../factories/affiliate/update"
 import { makeDeleteAffiliateController } from "../../factories/affiliate/delete";
 import { makeGetAffiliateByIdController } from "../../factories/affiliate/get-by-id";
 import { makeGetAffiliatesController } from "../../factories/affiliate/get-all";
+import { makeSignAffiliateUpController } from "../../factories/affiliate/sign-up";
 
 const router = Router()
 
@@ -19,6 +20,8 @@ router.post("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]
     email,
     document,
     referral_code,
+    phone_number,
+    ig_username,
     comission_percentage,
     lead_comission_amount
   } = req.body;
@@ -28,8 +31,34 @@ router.post("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]
     email,
     document,
     referral_code,
+    phone_number,
+    ig_username,
     comission_percentage,
     lead_comission_amount
+  })
+  res.status(statusCode).json(response);
+})
+
+router.post("/affiliates/sign-up", async (req: Request, res: Response) => {
+  const controller = makeSignAffiliateUpController();
+  const {
+    name,
+    email,
+    password,
+    document,
+    referral_code,
+    phone_number,
+    ig_username
+  } = req.body;
+
+  const { statusCode, response } = await controller.handle({
+    name,
+    email,
+    document,
+    referral_code,
+    phone_number,
+    ig_username,
+    password
   })
   res.status(statusCode).json(response);
 })
@@ -40,6 +69,9 @@ router.patch("/affiliates/:affiliate_id", verifyToken([AccountType.ADMIN, Accoun
   const {
     name,
     referral_code,
+    status,
+    phone_number,
+    ig_username,
     comission_percentage,
     lead_comission_amount
   } = req.body;
@@ -48,6 +80,9 @@ router.patch("/affiliates/:affiliate_id", verifyToken([AccountType.ADMIN, Accoun
     affiliate_id,
     name,
     referral_code,
+    status,
+    phone_number,
+    ig_username,
     comission_percentage,
     lead_comission_amount
   })
