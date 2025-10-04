@@ -10,6 +10,7 @@ import { makeDeleteAffiliateController } from "../../factories/affiliate/delete"
 import { makeGetAffiliateByIdController } from "../../factories/affiliate/get-by-id";
 import { makeGetAffiliatesController } from "../../factories/affiliate/get-all";
 import { makeSignAffiliateUpController } from "../../factories/affiliate/sign-up";
+import { makeCheckAffiliateReferralCodeAvailabilityController } from "../../factories/affiliate/check-referral-code-availability";
 
 const router = Router()
 
@@ -107,11 +108,20 @@ router.get("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR])
   })
   res.status(statusCode).json(response);
 })
+
 router.get("/affiliates/:affiliate_id/id", async (req: Request, res: Response) => {
   const controller = makeGetAffiliateByIdController();
   const { affiliate_id } = req.params
 
   const { statusCode, response } = await controller.handle(affiliate_id)
+  res.status(statusCode).json(response);
+})
+
+router.get("/affiliates/referral-code-availability", async (req: Request, res: Response) => {
+  const controller = makeCheckAffiliateReferralCodeAvailabilityController();
+  const { code } = req.query
+
+  const { statusCode, response } = await controller.handle(code ? code.toString() : "")
   res.status(statusCode).json(response);
 })
 
