@@ -1,6 +1,7 @@
 import { AffiliateTransaction } from "../../../domain/entities/affiliate-transaction"
 import type { Partner } from "../../../domain/entities/partner"
 import type { Transaction } from "../../../domain/entities/transaction"
+import { AffiliateStatus } from "../../../domain/enums/affiliate-status"
 import { TransactionStatus } from "../../../domain/enums/transaction-status"
 import { TransactionType } from "../../../domain/enums/transaction-type"
 import { AffiliateCommissionType } from "../../../shared/enums/affiliate-comission-type"
@@ -42,6 +43,10 @@ export class AddAffiliateComissionUseCase {
 
     if (!affiliate) {
       return new Error("Affiliate not found")
+    }
+
+    if (affiliate.status !== AffiliateStatus.ACTIVE) {
+      return new Error("Invalid affiliate status")
     }
 
     const wallet = await this.affiliateWalletRepo.findByAffiliateId(affiliate.id)
