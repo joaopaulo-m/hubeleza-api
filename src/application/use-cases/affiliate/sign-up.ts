@@ -47,6 +47,7 @@ export class SignAffiliateUpUseCase {
       comission_percentage: 0,
       lead_comission_amount: 0
     })
+
     const wallet = new AffiliateWallet({
       affiliate_id: affiliate.id,
       document: props.document,

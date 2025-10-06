@@ -11,6 +11,7 @@ import { makeGetAffiliateByIdController } from "../../factories/affiliate/get-by
 import { makeGetAffiliatesController } from "../../factories/affiliate/get-all";
 import { makeSignAffiliateUpController } from "../../factories/affiliate/sign-up";
 import { makeCheckAffiliateReferralCodeAvailabilityController } from "../../factories/affiliate/check-referral-code-availability";
+import type { AffiliateStatus } from "../../../domain/enums/affiliate-status";
 
 const router = Router()
 
@@ -100,10 +101,11 @@ router.delete("/affiliates/:affiliate_id", verifyToken([AccountType.ADMIN, Accou
 
 router.get("/affiliates", verifyToken([AccountType.ADMIN, AccountType.OPERATOR]), async (req: Request, res: Response) => {
   const controller = makeGetAffiliatesController();
-  const { name, referral_code } = req.query
+  const { name, referral_code, status } = req.query
 
   const { statusCode, response } = await controller.handle({
     name: name ? name.toString() : undefined,
+    status: status ? status.toString() as AffiliateStatus : undefined,
     referral_code: referral_code ? referral_code.toString() : undefined
   })
   res.status(statusCode).json(response);

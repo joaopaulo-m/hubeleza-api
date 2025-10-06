@@ -45,6 +45,7 @@ export class PrismaAffiliateRepository implements IAffiliateRepository {
           contains: props.name,
           mode: 'insensitive'
         } : undefined,
+        status: props.status,
         referral_code: props.referral_code ? { 
           contains: props.referral_code,
           mode: 'insensitive'
